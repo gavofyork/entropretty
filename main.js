@@ -7,11 +7,7 @@ function randSeed(nibbles = 8) {
     return s
 }
 
-let schemas = {
-    'Lines': { draw: drawLines, nibbles: 8, mutate: mutateBits(3) },
-    'Bloom': { draw: drawBloom, nibbles: 8, mutate: mutateBits(3) },
-    'Dial': { draw: drawDial, nibbles: 8, mutate: mutateBits(3) },
-};
+let schemas = {};
 
 function addSchema(name, draw, nibbles = 8, mutate = mutateBits(3)) {
     let schema = document.getElementById('schema');
@@ -111,94 +107,4 @@ function split(seed, parts) {
         last = next;
     }
     return r
-}
-
-function drawLines(ctx, size, seed) {
-    var width = size;
-    var height = size;
-
-    ctx.lineWidth = 4;
-    ctx.strokeStyle = light;
-    ctx.beginPath();
-    for (var x = 0; x <= width; x += width / 8) {
-        ctx.lineTo(x, ((seed[0] + seed[1] * 2**4 + seed[2] * 2**8 + x) ** 2.1) % height);
-    }
-    ctx.stroke();
-
-    ctx.lineWidth = 2;
-    ctx.strokeStyle = dark;
-    ctx.beginPath();
-    for (var x = 0; x <= width; x += width / 8) {
-        ctx.lineTo(x, ((seed[3] + seed[4] * 2**4 + seed[5] * 2**8 + x) ** 3.1) % height);
-    }
-    ctx.stroke();
-
-    ctx.lineWidth = 1;
-    ctx.strokeStyle = black;
-    ctx.beginPath();
-    for (var x = 0; x <= width; x += width / 8) {
-        ctx.lineTo(x, ((seed[5] + seed[6] * 2**4 + seed[7] * 2**8 + x) ** 4.1) % height);
-    }
-    ctx.stroke();
-}
-
-function drawPetals(ctx, count, bias, sway, width, shade) {
-    ctx.save();
-    let turns = count;
-    ctx.fillStyle = shade;
-    for (let i = 0; i < turns; i++) {
-        ctx.beginPath();
-        ctx.moveTo(0, 0);
-        ctx.quadraticCurveTo(-width + sway, bias, 0, 1);
-        ctx.quadraticCurveTo(width + sway, bias, 0, 0);
-        ctx.lineTo(0, 1);
-        ctx.lineWidth = 0.02;
-        ctx.strokeStyle = black;
-        ctx.fill();
-        ctx.rotate(Math.PI * 2 / turns);
-    }
-    ctx.restore();
-}
-
-function drawBloom(ctx, size, seed) {
-    ctx.translate(size / 2, size / 2);
-    ctx.scale(size / 2, size / 2);
-
-    for (let s = 0; s < 4; s++) {
-        ctx.scale(0.85, -0.85);
-        drawPetals(ctx,
-            Math.floor(seed[s] / 4) + 6,
-            (Math.floor(seed[s + 4] % 4) + 1) / 5,
-            (seed[s] % 4 - 1) / 8,
-            (Math.floor(seed[s + 4] / 4) + 1) / 9,
-            //seed[s] % 2 == 1 ? dark : light
-            `rgba(${s * 64}, ${s * 64}, ${s * 64}, 1.0)`
-        );
-    }
-}
-
-function drawDateTime(ctx, size, seed) {
-    let time = Math.floor(bits(seed, 0, 16) / 65536 * 86400);
-    let day = bits(seed, 16);
-    
-}
-
-function drawDial(ctx, size, seed) {
-    for (var i = 0; i < 4; i++) {
-        ctx.lineWidth = size / 20;
-        ctx.strokeStyle = dark;
-        ctx.beginPath();
-        let s = Math.PI * 2 * seed[i] / 16;
-        let l = Math.PI * 2 * (seed[i + 4] + 1) / 17;
-        ctx.arc(size / 2, size / 2, size / 2 / 6 * (i + 3) - ctx.lineWidth, s, s + l);
-        ctx.stroke();
-
-        ctx.lineWidth = 2;
-        ctx.strokeStyle = light;
-        ctx.beginPath();
-        s = Math.PI * 2 * seed[i] / 16;
-        l = Math.PI * 2 * (seed[i + 4] + 1) / 17;
-        ctx.arc(size / 2, size / 2, size / 2 / 6 * (i + 3) - ctx.lineWidth, s, s + l);
-        ctx.stroke();
-    }
 }
