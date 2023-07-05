@@ -38,4 +38,4 @@ function drawRoman(ctx, size, seed) {
     }
 }
 
-addSchema("Roman Numerals", drawRoman);
+addSchema("Roman Numerals", drawRoman, 8);

@@ -9,13 +9,13 @@
   <script type="text/javascript" src="main.js"></script>
 </head>
 
-<body onload="draw()" onclick="draw()">
-  <select id='schema' onchange="draw()">
-    <option>Lines</option>
-    <option>Bloom</option>
-    <option>Dial</option>
-  </select>
-  <canvas id='canvas' width=816 height=1000></canvas>
+<body onload="draw()">
+  <select id="schema" onchange="draw()"></select><br/>
+  <canvas id="canvas" width="816" height="896" onclick="draw()"></canvas>
+  <script type="text/javascript" src="lines.js"></script>
+  <script type="text/javascript" src="dial.js"></script>
+  <script type="text/javascript" src="bloom.js"></script>
+  <script type="text/javascript" src="datetime.js"></script>
   <script type="text/javascript" src="roman.js"></script>
 </body>
 </html>
