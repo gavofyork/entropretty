@@ -1,6 +1,6 @@
-function randSeed() {
+function randSeed(nibbles = 8) {
     let s = [];
-    for (var i = 0; i < 8; ++i) {
+    for (var i = 0; i < nibbles; ++i) {
         let n = Math.floor(Math.random() * 16);
         s.push(n);
     }
@@ -8,28 +8,37 @@ function randSeed() {
 }
 
 let schemas = {
-    'Lines': drawLines,
-    'Bloom': drawBloom,
-    'Dial': drawDial,
+    'Lines': { draw: drawLines, nibbles: 8, mutate: mutateBits(3) },
+    'Bloom': { draw: drawBloom, nibbles: 8, mutate: mutateBits(3) },
+    'Dial': { draw: drawDial, nibbles: 8, mutate: mutateBits(3) },
 };
 
-function addSchema(name, draw) {
-    document.getElementById('schema').innerHTML += `<option>${name}</option>`;
-    schemas[name] = draw;
+function addSchema(name, draw, nibbles = 8, mutate = mutateBits(3)) {
+    let schema = document.getElementById('schema');
+    schema.innerHTML += `<option>${name}</option>`;
+    schemas[name] = { draw, nibbles, mutate };
+    schema.value = name;
+    draw();
+}
+
+function mutateBits(count) {
+    return (seed) => {
+        for(var b = 0; b < count; ++b) {
+            let bit = 2 ** Math.floor(Math.random() * 4);
+            let item = Math.floor(Math.random() * 8);
+            seed[item] ^= bit;
+        }
+    }
 }
 
 function draw() {
     let scheme = schemas[document.getElementById('schema').value];
     var ctx = document.getElementById('canvas').getContext('2d');
     for(var j = 0; j < 16; j+=4) {
-        let seed = randSeed();
+        let seed = randSeed(scheme.nibbles);
         for(var i = j; i < j + 4; i++) {
             // flip some bits.
-            for(var b = 0; b < 3; ++b) {
-                let bit = 2 ** Math.floor(Math.random() * 4);
-                let item = Math.floor(Math.random() * 8);
-                seed[item] ^= bit;
-            }
+            scheme.mutate(seed);
 
             let x = i % 4;
             let y = Math.floor(i / 4);
@@ -37,16 +46,16 @@ function draw() {
             ctx.translate(x * 204 + 2, y * 224 + 24);
             ctx.fillStyle = 'white';
             ctx.fillRect(0, 0, 200, 200);
-            scheme(ctx, 200, seed);
+            scheme.draw(ctx, 200, seed);
             ctx.restore();
 
             ctx.save();
             ctx.translate(x * 204, y * 224);
             // split into 8 nibbles
             ctx.strokeStyle = 'none';
-            for(let i = 0; i < 8; ++i) {
-                let a = seed[i] % 4;
-                let b = (seed[i] - a) / 4;
+            for(let i = 0; i < seed.length; ++i) {
+                let a = bits(seed, i * 4, i * 4 + 2);
+                let b = bits(seed, i * 4 + 2, i * 4 + 4);
                 ctx.beginPath();
                 ctx.arc(12.5 + i * 25, 12.5, 11, 0, Math.PI * 2);
                 ctx.fillStyle = shade(a);
