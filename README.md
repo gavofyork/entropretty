@@ -4,6 +4,10 @@ A simple Javascript-based entropy-to-graphic harness.
 
 ## Usage
 
+Just view the `index.html` file in a browser locally.
+
+## Playing around
+
 1. Create a new `.js` file with a unique name, for example `foo.js`. 
 2. Implement a draw function (see below) and call it something like `drawFoo`.
 3. Put a call to `addSchema("Foo", drawFoo)` at the bottom. See below for the additional arguments.
