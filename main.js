@@ -14,7 +14,6 @@ function addSchema(name, draw, nibbles = 8, mutate = mutateBits(3)) {
     schema.innerHTML += `<option>${name}</option>`;
     schemas[name] = { draw, nibbles, mutate };
     schema.value = name;
-    draw();
 }
 
 function mutateBits(count) {
@@ -86,7 +85,7 @@ function shade(x) {
 }
 
 function bit(seed, i) {
-    return (seed[Math.floor(i / 4)] >> (i % 4)) & 1
+    return (seed[Math.floor(i / 4) % 8] >> (i % 4)) & 1
 }
 
 
