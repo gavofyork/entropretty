@@ -2,6 +2,8 @@
 
 A simple Javascript-based entropy-to-graphic harness.
 
+<img width="735" alt="image" src="https://github.com/gavofyork/entropretty/assets/138296/0832a8a7-7e6e-4e9b-9de6-6b48d0e80998">
+
 ## Usage
 
 Just view the `index.html` file in a browser locally.
