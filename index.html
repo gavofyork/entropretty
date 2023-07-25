@@ -9,15 +9,22 @@
   <script type="text/javascript" src="main.js"></script>
 </head>
 
-<body onload="draw()">
-  <select id="schema" onchange="draw()"></select><br/>
+<body onload="customChanged()">
+  <select id="schema" onchange="draw()">
+    <option id="customschema">[Custom]</option>
+  </select><br/>
   <canvas id="canvas" width="816" height="896" onclick="draw()"></canvas>
+  <textarea id="code" style="width: 816px; height: 300px" oninput="customChanged()">
+//function draw(ctx, size, seed) {
+split(seed, 4).forEach((n, i) => ctx.fillText(n, size / 2, size / 4 * i + size / 8, size))
+//}
+  </textarea>
   <script type="text/javascript" src="lines.js"></script>
   <script type="text/javascript" src="dial.js"></script>
-  <script type="text/javascript" src="bloom.js"></script>
   <script type="text/javascript" src="datetime.js"></script>
   <script type="text/javascript" src="roman.js"></script>
   <script type="text/javascript" src="maze.js"></script>
   <script type="text/javascript" src="sprite.js"></script>
+  <script type="text/javascript" src="bloom.js"></script>
 </body>
 </html>

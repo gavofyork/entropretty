@@ -21,7 +21,7 @@ function drawBloom(ctx, size, seed) {
     ctx.scale(size / 2, size / 2);
 
     for (let s = 0; s < 4; s++) {
-        ctx.scale(0.85, -0.85);
+        ctx.scale(0.7, -0.7);
         drawPetals(ctx,
             Math.floor(seed[s] / 4) + 6,
             (Math.floor(seed[s + 4] % 4) + 1) / 5,

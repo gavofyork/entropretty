@@ -7,7 +7,7 @@ function randSeed(nibbles = 8) {
     return s
 }
 
-let schemas = {};
+let schemas = { '[Custom]': { draw: null, nibbles: 8, mutate: mutateBits(3) } };
 
 function addSchema(name, draw, nibbles = 8, mutate = mutateBits(3)) {
     let schema = document.getElementById('schema');
@@ -24,6 +24,23 @@ function mutateBits(count) {
             seed[item] ^= bit;
         }
     }
+}
+
+function customChanged() {
+    let customCode = document.getElementById('code').value;
+    try {
+        schemas['[Custom]'].draw = eval(`function f(ctx, size, seed) {
+            ctx.strokeStyle = '';
+            ctx.fillStyle = 'black';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.font = (size / 4) + 'px serif';
+            ${customCode}
+        }
+        f`);
+        document.getElementById('customschema').selected = true;
+        draw();
+    } catch (e) {}
 }
 
 function drawItem(ctx, scheme, seed, s, x, y) {
