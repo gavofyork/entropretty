@@ -26,18 +26,38 @@ function mutateBits(count) {
     }
 }
 
+function load() {
+    let customCode = window.localStorage.getItem("customCode");
+    if (customCode) {
+        document.getElementById('code').value = customCode;
+    } else {
+        customCode = document.getElementById('code').value;
+    }
+    schemas['[Custom]'].draw = eval(`function f(ctx, size, seed) { ${customCode} } f`);
+    let schemeName = window.localStorage.getItem("schemeName");
+    if (schemeName) {
+        document.getElementById('schema').value = schemeName;
+    } else {
+        schemeName = document.getElementById('schema').value;
+    }
+    let ss = window.localStorage.getItem('seeds');
+    if (ss) {
+        try {
+            seeds = JSON.parse(ss);
+            seed = seeds.seed;
+            next4 = seeds.next4;
+            rest = seeds.rest;
+        }
+        catch (e) {}
+    }
+    draw();
+}
+
 function customChanged() {
     let customCode = document.getElementById('code').value;
+    window.localStorage.setItem("customCode", customCode);
     try {
-        schemas['[Custom]'].draw = eval(`function f(ctx, size, seed) {
-            ctx.strokeStyle = '';
-            ctx.fillStyle = 'black';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.font = (size / 4) + 'px serif';
-            ${customCode}
-        }
-        f`);
+        schemas['[Custom]'].draw = eval(`function f(ctx, size, seed) { ${customCode} } f`);
         document.getElementById('customschema').selected = true;
         draw();
     } catch (e) {}
@@ -48,6 +68,10 @@ function drawItem(ctx, scheme, seed, s, x, y) {
     ctx.translate(x * s * 1.02 + 2, y * s * 1.12 + s * 0.12);
     ctx.fillStyle = 'white';
     ctx.fillRect(0, 0, s, s);
+    ctx.strokeStyle = 'black';
+    ctx.fillStyle = 'black';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
     scheme.draw(ctx, s, seed);
     ctx.restore();
 
@@ -73,34 +97,65 @@ function drawItem(ctx, scheme, seed, s, x, y) {
     ctx.restore();
 }
 
+let seeds = null;
+// TODO: remove in favour of fields of seeds.
+let seed = [];
+let next4 = [];
+let rest = [];
+
+function resetSeeds() {
+    seed = [];
+    next4 = [];
+    rest = [];
+}
+
 function draw() {
-    let scheme = schemas[document.getElementById('schema').value];
+    let schemeName = document.getElementById('schema').value;
+    window.localStorage.setItem("schemeName", schemeName);
+    let scheme = schemas[schemeName];
+    if (scheme.nibbles != seed.length) {
+        seed = randSeed(scheme.nibbles);
+        next4 = [];
+        for(var i = 0; i < 4; ++i) {
+            let oseed = seed.slice();
+            scheme.mutate(oseed);
+            next4.push(oseed);
+        }
+        rest = [];
+        let s = null;
+        for(var i = 0; i < 128; ++i) {
+            if (i % 16 == 0) {
+                s = randSeed(scheme.nibbles);
+            } else {
+                scheme.mutate(s);
+            }
+            rest.push(s);
+        }
+        seeds = { seed, next4, rest };
+        window.localStorage.setItem('seeds', JSON.stringify(seeds));
+    }
     var ctx = document.getElementById('canvas').getContext('2d');
     ctx.fillStyle = 'rgb(64, 64, 64, 1)';
     ctx.fillRect(0, 0, 800, 900);
 
-    let seed = randSeed(scheme.nibbles);
     drawItem(ctx, scheme, seed, 400, 0, 0);
     ctx.save();
     ctx.translate(400 * 1.02, 0);
     for(var i = 0; i < 4; ++i) {
-        scheme.mutate(seed);
         let x = i % 2;
         let y = Math.floor(i  / 2);
-        drawItem(ctx, scheme, seed, 200, x, y);
+        drawItem(ctx, scheme, next4[i], 200, x, y);
     }
     ctx.restore();
 
     ctx.save();
     ctx.translate(0, 400 * 1.12);
     for(var j = 0; j < 128; j+=16) {
-        let seed = randSeed(scheme.nibbles);
         for(var i = j; i < j + 16; i++) {
             // flip some bits.
-            scheme.mutate(seed);
             let x = i % 16;
             let y = Math.floor(i / 16);
-            drawItem(ctx, scheme, seed, 50, x, y);
+            drawItem(ctx, scheme, rest[j], 50, x, y);
         }
     }
     ctx.restore();

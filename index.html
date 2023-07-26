@@ -9,16 +9,22 @@
   <script type="text/javascript" src="main.js"></script>
 </head>
 
-<body onload="customChanged()">
+<body onload="load()">
   <select id="schema" onchange="draw()">
     <option id="customschema">[Custom]</option>
   </select><br/>
-  <canvas id="canvas" width="816" height="896" onclick="draw()"></canvas>
-  <textarea id="code" style="width: 816px; height: 300px" oninput="customChanged()">
-//function draw(ctx, size, seed) {
-split(seed, 4).forEach((n, i) => ctx.fillText(n, size / 2, size / 4 * i + size / 8, size))
-//}
+  <canvas id="canvas" width="816" height="896" onclick="resetSeeds(); draw()"></canvas>
+  <div style="font-family: monospace">
+  function draw(ctx, size, seed) {
+  <div style="outline: 0; border: 0;">
+  <textarea id="code" rows="3" style="outline: 0; border: 0; width: 816px; font-family: monospace" oninput="customChanged()">
+ctx.font = (size / 2.5) + 'px serif';
+split(seed, 2).forEach((n, i) => ctx.fillText(n, size / 2, size / 2 * i + size / 4, size));
   </textarea>
+  </div>
+  }<br/>
+  addSchema("[Custom]", draw);
+  </div>
   <script type="text/javascript" src="lines.js"></script>
   <script type="text/javascript" src="dial.js"></script>
   <script type="text/javascript" src="datetime.js"></script>
