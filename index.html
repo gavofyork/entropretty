@@ -13,17 +13,15 @@
   <select id="schema" onchange="draw()">
     <option id="customschema">[Custom]</option>
   </select><br/>
-  <canvas id="canvas" width="816" height="896" onclick="resetSeeds(); draw()"></canvas>
-  <div style="font-family: monospace">
-  function draw(ctx, size, seed) {
-  <div style="outline: 0; border: 0;">
-  <textarea id="code" rows="3" style="outline: 0; border: 0; width: 816px; font-family: monospace" oninput="customChanged()">
-ctx.font = (size / 2.5) + 'px serif';
-split(seed, 2).forEach((n, i) => ctx.fillText(n, size / 2, size / 2 * i + size / 4, size));
+  <div style="display: flex; flex-direction: row; width: 100vw;">
+  <canvas id="canvas" width="816" height="896" onclick="clicked(event)" ondblclick="resetSeeds(); draw()"></canvas>
+  <textarea id="code" cols="80" style="margin-left: 2px; padding-left: 4px; border-box; width: 100%; height: 896px; font-family: monospace" oninput="customChanged()">
+function draw(ctx, size, seed) {
+  ctx.font = (size / 2.5) + 'px serif';
+  split(seed, 2).forEach((n, i) => ctx.fillText(n, size / 2, size / 2 * i + size / 4, size));
+}
+addSchema('[Custom]', draw);
   </textarea>
-  </div>
-  }<br/>
-  addSchema("[Custom]", draw);
   </div>
   <script type="text/javascript" src="lines.js"></script>
   <script type="text/javascript" src="dial.js"></script>

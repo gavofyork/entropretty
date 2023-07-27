@@ -4,7 +4,9 @@ height: 100%;
 margin: 0px;
 }
 * {
-background: #111;
-color: #bbb;
-outline: 1px dotted #666;
+    background: #111;
+    color: #bbb;
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
 }

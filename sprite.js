@@ -17,7 +17,7 @@ function drawComponent(ctx, px, py, shadow, scale) {
 }
 function drawSprite(ctx, size, seed) {
     let item = split(seed, 1)[0];// 5000060;
-    console.log(item);
+//    console.log(item);
 //    item = 38000060;
     let h = 16;
     let w = h / 2;
@@ -44,7 +44,7 @@ function drawSprite(ctx, size, seed) {
                 drawComponent(ctx, x, y, false, scale);
                 drawComponent(ctx, -x, y, false, scale);
             }*/
-/*            if (Math.tan(s) < 2) {
+            /*if (Math.tan(s) < 2) {
                 let t = Math.tan(s);
                 let v = t * 128;
                 ctx.fillStyle = `rgba(${v}, ${v}, ${v}, 1.0)`;
