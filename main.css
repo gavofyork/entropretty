@@ -1,12 +1,22 @@
 html, body {
 width:  100%;
 height: 100%;
-margin: 0px;
+margin: 0;
+background: #111;
 }
-* {
-    background: #111;
+#main {
+    display: flex;
+    flex-direction: row;
+    width: 100vw;
     color: #bbb;
     box-sizing: border-box;
     padding: 0;
     margin: 0;
+}
+#code {
+    height: 896px;
+    width: 100%;
+}
+.monaco-editor {
+    position: absolute !important;
 }

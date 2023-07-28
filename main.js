@@ -1,41 +1,44 @@
-function randSeed(nibbles = 8) {
-    let s = [];
-    for (var i = 0; i < nibbles; ++i) {
-        let n = Math.floor(Math.random() * 16);
-        s.push(n);
-    }
-    return s
-}
-
-let schemas = { '[Custom]': { draw: null, nibbles: 8, mutate: mutateBits(3) } };
-
-function addSchema(name, draw, nibbles = 8, mutate = mutateBits(3)) {
-    let schema = document.getElementById('schema');
-    schema.innerHTML += `<option>${name}</option>`;
-    schemas[name] = { draw, nibbles, mutate };
-    schema.value = name;
-}
-
-function mutateBits(count) {
-    return (seed) => {
-        for(var b = 0; b < count; ++b) {
-            let bit = 2 ** Math.floor(Math.random() * 4);
-            let item = Math.floor(Math.random() * 8);
-            seed[item] ^= bit;
-        }
-    }
-}
-
+let artist = null;
 let lastCustomCode = "";
+let seeds = null;
+let index = [0, 0];
+let ongoing = 0;
+let artistTimeout = null;
+let renderCache = {};
+let customChangeTimeout = null;
+let editor = null;
 
 function load() {
+    require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.26.1/min/vs' }});
+    require(["vs/editor/editor.main"], () => {
+        editor = monaco.editor.create(document.getElementById('code'), {
+        value: [
+            `function draw(ctx, size, seed) {`,
+            `  ctx.font = (size / 2.5) + 'px serif';`,
+            `  split(seed, 2).forEach((n, i) => ctx.fillText(n, size / 2, size / 2 * i + size / 4, size));`,
+            `}`,
+            `addSchema('[Custom]', draw);`
+        ].join('\n'),
+        language: 'javascript',
+        theme: 'vs-dark',
+        automaticLayout: true,
+      });
+      editor.onDidChangeModelContent((e) => { customChanged() });
+      if (!seeds) artistInitialized();
+    });
+    resetArtist();
+}
+
+function artistInitialized() {
+    if (!editor || seeds) return;
+
     lastCustomCode = window.localStorage.getItem("customCode");
     if (lastCustomCode) {
-        document.getElementById('code').value = lastCustomCode;
+        editor.setValue(lastCustomCode);
     } else {
-        lastCustomCode = document.getElementById('code').value;
+        lastCustomCode = editor.getValue();
     }
-    updateCustom()
+    updateCustom();
     let schemeName = window.localStorage.getItem("schemeName");
     if (schemeName) {
         document.getElementById('schema').value = schemeName;
@@ -43,22 +46,24 @@ function load() {
         schemeName = document.getElementById('schema').value;
     }
     try {
-        seeds = JSON.parse(window.localStorage.getItem('seeds'));
-    }
-    finally {
-        if (!seeds) resetSeeds();
-    }
-    try {
         index = JSON.parse(window.localStorage.getItem('index'));
     }
     finally {
         if (!index) index = [0, 0];
     }
-    draw();
+    try {
+        seeds = JSON.parse(window.localStorage.getItem('seeds'));
+    }
+    finally {
+        if (seeds) {
+            rerender();
+        } else {
+            resetSeeds();
+        }
+    }
 }
 
 function clicked(e) {
-    console.log(e);
     if (e.offsetY >= 400 * 1.12) {
         let x = Math.floor(e.offsetX / (50 * 1.02));
         let y = Math.floor((e.offsetY - 400 * 1.12) / (50 * 1.12));
@@ -71,65 +76,129 @@ function clicked(e) {
         return
     }
     window.localStorage.setItem("index", JSON.stringify(index));
-    draw();
+    ensureUpdated();
+}
+
+function schemaChanged() {
+    window.localStorage.setItem('schemeName', document.getElementById('schema').value);
+    rerender();
 }
 
 function updateCustom() {
-    let customCode = document.getElementById('code').value.trim();
+    let customCode = editor.getValue().trim();
     let prefix = "function draw(ctx, size, seed) {\n";
     let suffix = "\n}\naddSchema('[Custom]', draw);";
     if (!customCode.startsWith(prefix) || !customCode.endsWith(suffix)) {
-        document.getElementById('code').value = lastCustomCode;
+        editor.setValue(lastCustomCode);
         return;
     }
     lastCustomCode = customCode;
-    try {
-        schemas['[Custom]'].draw = eval(customCode.slice(0, -suffix.length) + "} draw");
-        window.localStorage.setItem("customCode", customCode);
-    } catch (e) {}
+    window.localStorage.setItem("customCode", customCode);
+    let code = customCode.slice(0, -suffix.length) + "} draw";
+    artist.postMessage({ op: 'updateCustom', code });
 }
 
 function customChanged() {
     updateCustom();
     document.getElementById('customschema').selected = true;
-    draw();
+    if (customChangeTimeout) window.clearTimeout(customChangeTimeout);
+    customChangeTimeout = window.setTimeout(() => { customChangeTimeout = null; rerender(); }, 300);
 }
 
-function drawItem(ctx, scheme, seed, s, x, y) {
-    ctx.save();
-    ctx.translate(x * s * 1.02, y * s * 1.12 + s * 0.12);
-    ctx.fillStyle = 'white';
-    ctx.fillRect(0, 0, s, s);
-    ctx.lineWidth = 1;
-    ctx.lineCap = 'butt';
-    ctx.lineJoin = 'miter';
-    ctx.strokeStyle = 'black';
-    ctx.fillStyle = 'black';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    try {
-        scheme.draw(ctx, s, seed);
+function resetArtist() {
+    if (artist) artist.terminate();
+    artist = new Worker('artist.js');
+    artist.onmessage = onArtistMessage;
+    artistTimeout = null;
+    ongoing = 0;
+}
+
+function finishRender() {
+    window.clearTimeout(artistTimeout);
+    artistTimeout = null;
+    paint();
+}
+
+function ensureUpdated() {
+    if (ongoing == 0) {
+        // Everything rendered
+        paint();
     }
-    catch (e) {
-        ctx.lineWidth = 2;
+    // No need to do anything if still rendering as we will paint once it's complete.
+}
+
+function resetSeeds() {
+    let mutate = mutateBits(3);
+    seeds = [];
+    for(var i = 0; i < 8; ++i) {
+        let run = [randSeed(8)];
+        for(var j = 0; j < 15; ++j) {
+            run.push(run.slice(-1)[0].slice());
+            mutate(run.slice(-1)[0]);
+        }
+        seeds.push(run);
+    }
+    window.localStorage.setItem('seeds', JSON.stringify(seeds));
+    rerender();
+}
+
+function rerender() {
+    renderCache = {};
+    if (artistTimeout) {
+        window.clearTimeout(artistTimeout);
+        resetArtist();
+    }
+    artistTimeout = window.setTimeout(resetArtist, 5000);
+    let schemeName = document.getElementById('schema').value;
+    for(var y = 0; y < 8; y++) {
+        for(var x = 0; x < 16; x++) {
+            ongoing++;
+            artist.postMessage({ op: 'render', schemeName, seed: seeds[y][x], size: 400 });
+        }
+    }
+}
+
+function onArtistMessage(e) {
+    if (e.data.op == 'rendered') {
+        let { image, seed } = e.data;
+        renderCache[bits(seed)] = image;
+        ongoing = Math.max(0, ongoing - 1);
+        if (ongoing == 0) {
+            finishRender();
+        }
+    } else if (e.data.op == 'addSchema') {
+        schema.innerHTML += `<option>${e.data.name}</option>`;
+        schema.value = e.data.name;
+    } else if (e.data.op == 'initialized') {
+        artistInitialized();
+    }
+}
+
+function drawItem(ctx, seed, x, y, size) {
+    let image = renderCache[bits(seed)];
+    if (!image) {
+        ctx.lineWidth = size / 8;
         ctx.lineCap = 'butt';
         ctx.lineJoin = 'miter';
-        ctx.strokeStyle = 'black';
+        ctx.strokeStyle = 'red';
         ctx.beginPath();
-        ctx.moveTo(0, 0);
-        ctx.lineTo(s, s);
-        ctx.moveTo(0, s);
-        ctx.lineTo(s, 0);
+        ctx.arc(x + size / 2, y + size / 2, size / 3, 0, Math.PI * 2);
         ctx.stroke();
+    } else {
+        ctx.drawImage(image, 0, 0, image.width, image.height, x, y, size, size);
     }
-    ctx.restore();
+}
+
+function paintItem(ctx, seed, x, y, size) {
+    ctx.fillStyle = 'white';
+    ctx.fillRect(x, y + size * 0.12, size, size);
+    drawItem(ctx, seed, x, y + size * 0.12, size)
 
     ctx.save();
-    ctx.translate(x * s * 1.02, y * s * 1.12);
-    // split into 8 nibbles
+    ctx.translate(x, y);
     ctx.strokeStyle = 'none';
     for(let i = 0; i < seed.length; ++i) {
-        let d = s / 8;
+        let d = size / 8;
         let r = d / 2;
         let a = bits(seed, i * 4, i * 4 + 2);
         let b = bits(seed, i * 4 + 2, i * 4 + 4);
@@ -142,53 +211,31 @@ function drawItem(ctx, scheme, seed, s, x, y) {
         ctx.fillStyle = shade(b);
         ctx.fill();
     }
-//    console.log(x, y, seed.map((x) => x.toString(16)).reduce((x, y) => x + y));
     ctx.restore();
 }
 
-let seeds = null;
-let index = [0, 0];
-
-function sfc32(a, b, c, d) {
-    return function() {
-      a >>>= 0; b >>>= 0; c >>>= 0; d >>>= 0; 
-      var t = (a + b) | 0;
-      a = b ^ b >>> 9;
-      b = c + (c << 3) | 0;
-      c = (c << 21 | c >>> 11);
-      d = d + 1 | 0;
-      t = t + d | 0;
-      c = c + t | 0;
-      return (t >>> 0) / 4294967296;
-    }
-}
-
-function resetSeeds() {
-    let schema = currentSchema();
-    seeds = [];
-    for(var i = 0; i < 8; ++i) {
-        let run = [randSeed(schema.nibbles)];
-        for(var j = 0; j < 15; ++j) {
-            run.push(run.slice(-1)[0].slice());
-            schema.mutate(run.slice(-1)[0]);
-        }
-        seeds.push(run);
-    }
-    window.localStorage.setItem('seeds', JSON.stringify(seeds));
-}
-
-function currentSchema() {
-    let schemeName = document.getElementById('schema').value;
-    window.localStorage.setItem("schemeName", schemeName);
-    return schemas[schemeName];
-}
-
-function draw() {
-    let schema = currentSchema();
-    if (!seeds || !seeds[0] || !seeds[0][0] || schema.nibbles != seeds[0][0].length) {
-        resetSeeds();
+// Assumes rendering is complete.
+function paint() {
+    if (ongoing > 0) {
+        console.warn("paint() called while rendering. This won't work.");
+        return;
     }
     var ctx = document.getElementById('canvas').getContext('2d');
+
+    ctx.fillStyle = '#444';
+    ctx.fillRect(0, 0, 800 * 1.02, 800 * 1.12);
+
+    paintItem(ctx, seeds[index[0]][index[1]], 0, 0, 400);
+    for(var i = 0; i < 16; ++i) {
+        let x = i % 4;
+        let y = Math.floor(i / 4);
+        paintItem(ctx, seeds[index[0]][i], x * 100 * 1.02 + 400 * 1.02, y * 100 * 1.12, 100);
+    }
+    for(var y = 0; y < 8; y++) {
+        for(var x = 0; x < 16; x++) {
+            paintItem(ctx, seeds[y][x], x * 50 * 1.02, y * 50 * 1.12 + 400 * 1.12, 50);
+        }
+    }
 
     let highlight = (x, y, s) => {
         ctx.fillStyle = '#f002';
@@ -197,28 +244,12 @@ function draw() {
         ctx.lineWidth = 1;
         ctx.strokeRect(x * s * 1.02, y * s * 1.12, s * 1.02, s * 1.12);
     };
-
-    ctx.fillStyle = 'rgb(64, 64, 64, 1)';
-    ctx.fillRect(0, 0, 800 * 1.02, 800 * 1.12);
-
-    drawItem(ctx, schema, seeds[index[0]][index[1]], 400, 0, 0);
     ctx.save();
     ctx.translate(400 * 1.02, 0);
-    for(var i = 0; i < 16; ++i) {
-        let x = i % 4;
-        let y = Math.floor(i / 4);
-        drawItem(ctx, schema, seeds[index[0]][i], 100, x, y);
-    }
     highlight(index[1] % 4, Math.floor(index[1] / 4), 100);
     ctx.restore();
-
     ctx.save();
     ctx.translate(0, 400 * 1.12);
-    for(var y = 0; y < 8; y++) {
-        for(var x = 0; x < 16; x++) {
-            drawItem(ctx, schema, seeds[y][x], 50, x, y);
-        }
-    }
     highlight(index[1], index[0], 50);
     ctx.restore();
 }
@@ -246,7 +277,7 @@ function bit(seed, i) {
 }
 
 
-function bits(seed, from, to = 32) {
+function bits(seed, from = 0, to = 32) {
     let r = 0;
     for (let i = from; i < to; ++i) {
         r = r << 1 | bit(seed, i);
@@ -266,4 +297,23 @@ function split(seed, parts) {
         last = next;
     }
     return r
+}
+
+function randSeed(nibbles = 8) {
+    let s = [];
+    for (var i = 0; i < nibbles; ++i) {
+        let n = Math.floor(Math.random() * 16);
+        s.push(n);
+    }
+    return s
+}
+
+function mutateBits(count) {
+    return (seed) => {
+        for(var b = 0; b < count; ++b) {
+            let bit = 2 ** Math.floor(Math.random() * 4);
+            let item = Math.floor(Math.random() * 8);
+            seed[item] ^= bit;
+        }
+    }
 }

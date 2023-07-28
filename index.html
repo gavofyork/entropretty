@@ -5,30 +5,19 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width">
   <link href="main.css" rel="stylesheet" />
+  <link rel="stylesheet" data-name="vs/editor/editor.main" href="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.20.0/min/vs/editor/editor.main.min.css">
   <title>Extropretty</title>
   <script type="text/javascript" src="main.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.26.1/min/vs/loader.min.js"></script>
 </head>
 
 <body onload="load()">
-  <select id="schema" onchange="draw()">
+  <select id="schema" onchange="schemaChanged()">
     <option id="customschema">[Custom]</option>
   </select><br/>
-  <div style="display: flex; flex-direction: row; width: 100vw;">
-  <canvas id="canvas" width="816" height="896" onclick="clicked(event)" ondblclick="resetSeeds(); draw()"></canvas>
-  <textarea id="code" cols="80" style="margin-left: 2px; padding-left: 4px; border-box; width: 100%; height: 896px; font-family: monospace" oninput="customChanged()">
-function draw(ctx, size, seed) {
-  ctx.font = (size / 2.5) + 'px serif';
-  split(seed, 2).forEach((n, i) => ctx.fillText(n, size / 2, size / 2 * i + size / 4, size));
-}
-addSchema('[Custom]', draw);
-  </textarea>
+  <div id="main">
+    <canvas id="canvas" width="816" height="896" onclick="clicked(event)" ondblclick="resetSeeds()"></canvas>
+    <div id="code"></div>
   </div>
-  <script type="text/javascript" src="lines.js"></script>
-  <script type="text/javascript" src="dial.js"></script>
-  <script type="text/javascript" src="datetime.js"></script>
-  <script type="text/javascript" src="roman.js"></script>
-  <script type="text/javascript" src="maze.js"></script>
-  <script type="text/javascript" src="sprite.js"></script>
-  <script type="text/javascript" src="bloom.js"></script>
 </body>
 </html>
