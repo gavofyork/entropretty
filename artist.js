@@ -1,41 +1,34 @@
 let schemas = { '[Custom]': { draw: null } };
 
-function addSchema(name, draw) {
-    postMessage({ op: 'addSchema', name });
-    schemas[name] = { draw };
-}
+let standardSeed = [14, 2, 16, 9, 2, 4, 9, 6];
 
-importScripts(
-    "lines.js",
-    "dial.js",
-    "datetime.js",
-    "roman.js",
-    "maze.js",
-    "sprite.js",
-    "bloom.js"
-);
+function thumb(draw) {
+    let canvas = new OffscreenCanvas(100, 100);
+    drawItem(canvas.getContext('2d'), {draw}, standardSeed, 100);
+    return canvas.transferToImageBitmap();
+}
 
 onmessage = function(e) {
     if (e.data.op == 'render') {
-        let { schemeName, seed, size } = e.data;
-        let scheme = schemas[schemeName];
+        let { schemaName, seed, size } = e.data;
+        let schema = schemas[schemaName];
         let canvas = new OffscreenCanvas(size, size);
-        drawItem(canvas.getContext('2d'), scheme, seed, size);
+        drawItem(canvas.getContext('2d'), schema, seed, size);
         let image = canvas.transferToImageBitmap();
         postMessage({ op: 'rendered', image, seed });
     } else if (e.data.op == 'updateCustom') {
         try {
-            schemas['[Custom]'].draw = eval(e.data.code);
+            let d = eval(e.data.code);
+            schemas['[Custom]'].draw = d;
+            postMessage({ op: 'customThumb', thumb: thumb(d) });
         }
         catch (e) {
-            console.warn('Invalid draw code')
+            console.warn('Invalid draw code', e);
         }
     }
 };
 
-postMessage({ op: 'initialized' });
-
-function drawItem(ctx, scheme, seed, s, x, y) {
+function drawItem(ctx, schema, seed, s) {
     ctx.fillStyle = 'white';
     ctx.fillRect(0, 0, s, s);
     ctx.lineWidth = 1;
@@ -46,7 +39,7 @@ function drawItem(ctx, scheme, seed, s, x, y) {
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     try {
-        scheme.draw(ctx, s, seed);
+        schema.draw(ctx, s, seed);
     }
     catch (e) {
         console.warn('Render error', e);
@@ -121,3 +114,21 @@ function sfc32(a, b, c, d) {
       return (t >>> 0) / 4294967296;
     }
 }
+
+function addSchema(name, draw) {
+    postMessage({ op: 'addSchema', name, thumb: thumb(draw) });
+    schemas[name] = { draw };
+}
+
+importScripts(
+    "lines.js",
+    "dial.js",
+    "datetime.js",
+    "roman.js",
+    "maze.js",
+    "sprite.js",
+    "bloom.js",
+    "circles.js"
+);
+
+postMessage({ op: 'initialized' });

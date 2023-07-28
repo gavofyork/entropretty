@@ -5,8 +5,10 @@ let index = [0, 0];
 let ongoing = 0;
 let artistTimeout = null;
 let renderCache = {};
+let schemaName = null;
 let customChangeTimeout = null;
 let editor = null;
+let artistInitialized = false;
 
 function load() {
     require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.26.1/min/vs' }});
@@ -24,13 +26,13 @@ function load() {
         automaticLayout: true,
       });
       editor.onDidChangeModelContent((e) => { customChanged() });
-      if (!seeds) artistInitialized();
+      ensureInitialized();
     });
     resetArtist();
 }
 
-function artistInitialized() {
-    if (!editor || seeds) return;
+function ensureInitialized() {
+    if (!editor || !artistInitialized || seeds) return;
 
     lastCustomCode = window.localStorage.getItem("customCode");
     if (lastCustomCode) {
@@ -39,12 +41,7 @@ function artistInitialized() {
         lastCustomCode = editor.getValue();
     }
     updateCustom();
-    let schemeName = window.localStorage.getItem("schemeName");
-    if (schemeName) {
-        document.getElementById('schema').value = schemeName;
-    } else {
-        schemeName = document.getElementById('schema').value;
-    }
+    selectSchema(window.localStorage.getItem("schemaName") || '[Custom]');
     try {
         index = JSON.parse(window.localStorage.getItem('index'));
     }
@@ -79,8 +76,14 @@ function clicked(e) {
     ensureUpdated();
 }
 
-function schemaChanged() {
-    window.localStorage.setItem('schemeName', document.getElementById('schema').value);
+function selectSchema(name) {
+    if (schemaName == name) return;
+    if (schemaName) {
+        document.getElementById(`thumb-${schemaName}`).style.backgroundColor = 'transparent';
+    }
+    schemaName = name;
+    document.getElementById(`thumb-${schemaName}`).style.backgroundColor = '#66f';
+    window.localStorage.setItem('schemaName', name);
     rerender();
 }
 
@@ -100,7 +103,7 @@ function updateCustom() {
 
 function customChanged() {
     updateCustom();
-    document.getElementById('customschema').selected = true;
+    if (seeds) selectSchema('[Custom]');
     if (customChangeTimeout) window.clearTimeout(customChangeTimeout);
     customChangeTimeout = window.setTimeout(() => { customChangeTimeout = null; rerender(); }, 300);
 }
@@ -143,17 +146,19 @@ function resetSeeds() {
 }
 
 function rerender() {
+    // We must bail if there's no seeds yet - we will call rerender at the end of the initialization
+    // process anyway.
+    if (!seeds) return;
     renderCache = {};
     if (artistTimeout) {
         window.clearTimeout(artistTimeout);
         resetArtist();
     }
     artistTimeout = window.setTimeout(resetArtist, 5000);
-    let schemeName = document.getElementById('schema').value;
     for(var y = 0; y < 8; y++) {
         for(var x = 0; x < 16; x++) {
             ongoing++;
-            artist.postMessage({ op: 'render', schemeName, seed: seeds[y][x], size: 400 });
+            artist.postMessage({ op: 'render', schemaName, seed: seeds[y][x], size: 400 });
         }
     }
 }
@@ -167,10 +172,22 @@ function onArtistMessage(e) {
             finishRender();
         }
     } else if (e.data.op == 'addSchema') {
-        schema.innerHTML += `<option>${e.data.name}</option>`;
-        schema.value = e.data.name;
+        if (artistInitialized) return;
+        let canvas = document.createElement('canvas');
+        let thumb = e.data.thumb;
+        canvas.id = `thumb-${e.data.name}`;
+        canvas.width = 100;
+        canvas.height = 100;
+        canvas.getContext('2d').drawImage(thumb, 0, 0, thumb.width, thumb.height, 0, 0, 100, 100);
+        canvas.onclick = () => { selectSchema(e.data.name) };
+        document.getElementById('schemas').appendChild(canvas);
     } else if (e.data.op == 'initialized') {
-        artistInitialized();
+        artistInitialized = true;
+        ensureInitialized();
+    } else if (e.data.op == 'customThumb') {
+        let thumb = e.data.thumb;
+        let ctx = document.getElementById('thumb-[Custom]').getContext('2d');
+        ctx.drawImage(thumb, 0, 0, thumb.width, thumb.height, 0, 0, 100, 100);
     }
 }
 

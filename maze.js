@@ -275,7 +275,6 @@ function drawWilsonMaze(ctx, size, seed) {
     if (ns.length > 1) {
         let a = deadend(ns[0], cells, start);
         let b = deadend(ns[1], cells, start);
-        console.log(a, b);
         if (a) start = a;
         if (b) start = b;
     }
@@ -284,7 +283,6 @@ function drawWilsonMaze(ctx, size, seed) {
     if (ns.length > 1) {
         let a = deadend(ns[0], cells, end);
         let b = deadend(ns[1], cells, end);
-        console.log(a, b);
         if (a) end = a;
         if (b) end = b;
     }
