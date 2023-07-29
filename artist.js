@@ -1,6 +1,25 @@
 let schemas = { '[Custom]': { draw: null } };
-
 let standardSeed = [14, 2, 16, 9, 2, 4, 9, 6];
+let context;
+
+Object.defineProperty(Array.prototype, 'strokeEach', {
+    value: function(f) {
+        this.forEach((e, i) => {
+            context.beginPath();
+            f(e, i);
+            context.stroke();
+        });
+    }
+});
+Object.defineProperty(Array.prototype, 'fillEach', {
+    value: function(f) {
+        this.forEach((e, i) => {
+            context.beginPath();
+            f(e, i);
+            context.fill();
+        });
+    }
+});
 
 function thumb(draw) {
     let canvas = new OffscreenCanvas(100, 100);
@@ -42,7 +61,9 @@ function drawItem(ctx, schema, seed, size) {
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     try {
+        context = ctx;
         schema.draw(ctx, seed);
+        context = null;
     }
     catch (e) {
         console.warn('Render error', e);
@@ -134,6 +155,8 @@ importScripts(
     "bloom.js",
     "circles.js",
     "planets.js",
+    "circlebara.js",
+    "circlebarb.js",
 );
 
 postMessage({ op: 'initialized' });

@@ -98,7 +98,9 @@ function updateCustom() {
     if (lastCustomCode == customCode) return;
     lastCustomCode = customCode;
     window.localStorage.setItem("customCode", customCode);
-    let code = customCode.slice(0, -suffix.length) + "} draw";
+    let code = customCode
+        .replace('°', ' * Math.PI * 2')
+        .slice(0, -suffix.length) + "} draw";
     console.log("Main: Updating custom...");
     artist.postMessage({ op: 'updateCustom', code });
 }
