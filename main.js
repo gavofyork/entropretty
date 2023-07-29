@@ -15,9 +15,9 @@ function load() {
     require(["vs/editor/editor.main"], () => {
         editor = monaco.editor.create(document.getElementById('code'), {
         value: [
-            `function draw(ctx, size, seed) {`,
-            `  ctx.font = (size / 2.5) + 'px serif';`,
-            `  split(seed, 2).forEach((n, i) => ctx.fillText(n, size / 2, size / 2 * i + size / 4, size));`,
+            `function draw(ctx, seed) {`,
+            `  ctx.font = '0.4px serif';`,
+            `  split(seed, 2).forEach((n, i) => ctx.fillText(n, 0.5, i / 2 + 0.25, 1));`,
             `}`,
             `addSchema('[Custom]', draw);`
         ].join('\n'),
@@ -89,7 +89,7 @@ function selectSchema(name) {
 
 function updateCustom() {
     let customCode = editor.getValue().trim();
-    let prefix = "function draw(ctx, size, seed) {\n";
+    let prefix = "function draw(ctx, seed) {\n";
     let suffix = "\n}\naddSchema('[Custom]', draw);";
     if (!customCode.startsWith(prefix) || !customCode.endsWith(suffix)) {
         editor.setValue(lastCustomCode);

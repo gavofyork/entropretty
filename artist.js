@@ -29,10 +29,12 @@ onmessage = function(e) {
     }
 };
 
-function drawItem(ctx, schema, seed, s) {
+function drawItem(ctx, schema, seed, size) {
+    ctx.save();
     ctx.fillStyle = 'white';
-    ctx.fillRect(0, 0, s, s);
-    ctx.lineWidth = 1;
+    ctx.scale(size, size);
+    ctx.fillRect(0, 0, 1, 1);
+    ctx.lineWidth = 0.01;
     ctx.lineCap = 'butt';
     ctx.lineJoin = 'miter';
     ctx.strokeStyle = 'black';
@@ -40,21 +42,22 @@ function drawItem(ctx, schema, seed, s) {
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     try {
-        schema.draw(ctx, s, seed);
+        schema.draw(ctx, seed);
     }
     catch (e) {
         console.warn('Render error', e);
-        ctx.lineWidth = 2;
+        ctx.lineWidth = 0.02;
         ctx.lineCap = 'butt';
         ctx.lineJoin = 'miter';
         ctx.strokeStyle = 'black';
         ctx.beginPath();
         ctx.moveTo(0, 0);
-        ctx.lineTo(s, s);
-        ctx.moveTo(0, s);
-        ctx.lineTo(s, 0);
+        ctx.lineTo(1, 1);
+        ctx.moveTo(0, 1);
+        ctx.lineTo(1, 0);
         ctx.stroke();
     }
+    ctx.restore();
 }
 
 let white = '#fff';

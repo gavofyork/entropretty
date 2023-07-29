@@ -168,7 +168,8 @@ function deadend(cell, cells, last) {
     return null
 }
 
-function drawWilsonMaze(ctx, size, seed) {
+function drawWilsonMaze(ctx, seed) {
+    let size = 1;
     let cols = 16;
     let rows = cols;
     let inc = size / cols;

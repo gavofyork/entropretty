@@ -26,7 +26,8 @@ function roman(n) {
     return result
 }
 
-function drawRoman(ctx, size, seed) {
+function drawRoman(ctx, seed) {
+    let size = 1;
     let numbers = split(seed, 3);
     ctx.strokeStyle = '';
     ctx.fillStyle = 'black';

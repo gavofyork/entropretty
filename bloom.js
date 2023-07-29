@@ -16,9 +16,9 @@ function drawPetals(ctx, count, bias, sway, width, shade) {
     ctx.restore();
 }
 
-function drawBloom(ctx, size, seed) {
-    ctx.translate(size / 2, size / 2);
-    ctx.scale(size / 2, size / 2);
+function drawBloom(ctx, seed) {
+    ctx.translate(0.5, 0.5);
+    ctx.scale(0.5, 0.5);
 
     for (let s = 0; s < 4; s++) {
         ctx.scale(0.7, -0.7);

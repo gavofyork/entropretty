@@ -15,7 +15,8 @@ function drawComponent(ctx, px, py, shadow, scale) {
         ctx.fillRect(px * scale, py * scale, scale, scale)
     }
 }
-function drawSprite(ctx, size, seed) {
+function drawSprite(ctx, seed) {
+    let size = 1;
     let item = split(seed, 1)[0];// 5000060;
 //    console.log(item);
 //    item = 38000060;

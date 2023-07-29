@@ -1,4 +1,5 @@
-function drawDateTime(ctx, size, seed) {
+function drawDateTime(ctx, seed) {
+    let size = 1;
     ctx.fillStyle = 'black';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'bottom';
