@@ -21,6 +21,7 @@ onmessage = function(e) {
             let d = eval(e.data.code);
             schemas['[Custom]'].draw = d;
             postMessage({ op: 'customThumb', thumb: thumb(d) });
+            console.log("Artist: Updated custom.");
         }
         catch (e) {
             console.warn('Invalid draw code', e);
@@ -128,7 +129,8 @@ importScripts(
     "maze.js",
     "sprite.js",
     "bloom.js",
-    "circles.js"
+    "circles.js",
+    "planets.js",
 );
 
 postMessage({ op: 'initialized' });

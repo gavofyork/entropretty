@@ -34,11 +34,9 @@ function load() {
 function ensureInitialized() {
     if (!editor || !artistInitialized || seeds) return;
 
-    lastCustomCode = window.localStorage.getItem("customCode");
-    if (lastCustomCode) {
-        editor.setValue(lastCustomCode);
-    } else {
-        lastCustomCode = editor.getValue();
+    let cc = window.localStorage.getItem("customCode");
+    if (cc) {
+        editor.setValue(cc);
     }
     updateCustom();
     selectSchema(window.localStorage.getItem("schemaName") || '[Custom]');
@@ -82,7 +80,9 @@ function selectSchema(name) {
         document.getElementById(`thumb-${schemaName}`).style.backgroundColor = 'transparent';
     }
     schemaName = name;
-    document.getElementById(`thumb-${schemaName}`).style.backgroundColor = '#66f';
+    let e = document.getElementById(`thumb-${schemaName}`);
+    e.style.backgroundColor = '#66f';
+    if (e.scrollIntoViewIfNeeded) e.scrollIntoViewIfNeeded();
     window.localStorage.setItem('schemaName', name);
     rerender();
 }
@@ -95,9 +95,11 @@ function updateCustom() {
         editor.setValue(lastCustomCode);
         return;
     }
+    if (lastCustomCode == customCode) return;
     lastCustomCode = customCode;
     window.localStorage.setItem("customCode", customCode);
     let code = customCode.slice(0, -suffix.length) + "} draw";
+    console.log("Main: Updating custom...");
     artist.postMessage({ op: 'updateCustom', code });
 }
 
@@ -154,7 +156,8 @@ function rerender() {
         window.clearTimeout(artistTimeout);
         resetArtist();
     }
-    artistTimeout = window.setTimeout(resetArtist, 5000);
+    artistTimeout = window.setTimeout(resetArtist, 500000);
+    console.log(`Main: Rerendering ${schemaName}`);
     for(var y = 0; y < 8; y++) {
         for(var x = 0; x < 16; x++) {
             ongoing++;
