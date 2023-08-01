@@ -157,6 +157,7 @@ importScripts(
     "planets.js",
     "circlebara.js",
     "circlebarb.js",
+    "lemonjelly.js",
 );
 
 postMessage({ op: 'initialized' });
