@@ -158,6 +158,7 @@ importScripts(
     "circlebara.js",
     "circlebarb.js",
     "lemonjelly.js",
+    "squares.js",
 );
 
 postMessage({ op: 'initialized' });
