@@ -97,6 +97,9 @@ addSchema("Bloom", drawBloom);
 import { draw as drawLemonJelly } from "./designs/lemonjelly.js";
 addSchema("Lemon Jelly", drawLemonJelly);
 
+import { draw as drawLemonJellyNext } from "./designs/lemonjellynext.js";
+addSchema("Lemon Jelly Next", drawLemonJellyNext);
+
 import { draw as drawCircleBarA } from "./designs/circlebara.js";
 addSchema("Circle Bar A", drawCircleBarA);
 
