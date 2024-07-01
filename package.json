@@ -1,0 +1,11 @@
+{
+  "name": "entropretty",
+  "scripts": {
+    "start": "npx serve .",
+    "build": "for file in ./designs/*.js; do rollup -i $file -o out/$(basename $file) -f es -p @rollup/plugin-terser; done"
+  },
+  "devDependencies": {
+    "@rollup/plugin-terser": "^0.4.4",
+    "rollup": "^4.18.0"
+  }
+}

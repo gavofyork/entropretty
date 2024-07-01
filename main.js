@@ -114,7 +114,7 @@ function customChanged() {
 
 function resetArtist() {
     if (artist) artist.terminate();
-    artist = new Worker('artist.js');
+    artist = new Worker('artist.js', {type: 'module'});
     artist.onmessage = onArtistMessage;
     artistTimeout = null;
     ongoing = 0;

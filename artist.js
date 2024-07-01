@@ -1,3 +1,6 @@
+// Import all utils, to make them available to the code editor
+import { bits, bit, pi,shade, black, white, light, dark, split, gray, turn, deg } from "./utils.js";
+
 let schemas = { '[Custom]': { draw: null } };
 let standardSeed = [14, 2, 16, 9, 2, 4, 9, 6];
 let context;
@@ -81,83 +84,47 @@ function drawItem(ctx, schema, seed, size) {
     ctx.restore();
 }
 
-let white = '#fff';
-let light = '#ccc';
-let dark = '#666';
-let black = '#000';
-let pi = Math.PI;
-function deg(x) { return x / 90 * 2 * Math.PI }
-function turn(x) { return 2 * Math.PI / x }
-function gray(x) {
-    return `rgba(${x}, ${x}, ${x}, 1)`;
-}
-
-function shade(x) {
-    if(x < 1) { return white }
-    if(x < 2) { return light }
-    if(x < 3) { return dark }
-    return black
-}
-
-function bit(seed, i) {
-    return (seed[Math.floor(i / 4) % 8] >> (i % 4)) & 1
-}
-
-
-function bits(seed, from = 0, to = 32) {
-    let r = 0;
-    for (let i = from; i < to; ++i) {
-        r = r << 1 | bit(seed, i);
-    }
-    if (r < 0) {
-        r = r * -2;
-    }
-    return r
-}
-
-function split(seed, parts) {
-    let r = [];
-    let last = 0;
-    for (let i = 0; i < parts; ++i) {
-        let next = Math.round((i + 1) * 32 / parts);
-        r.push(bits(seed, last, next));
-        last = next;
-    }
-    return r
-}
-
-function sfc32(a, b, c, d) {
-    return function() {
-      a >>>= 0; b >>>= 0; c >>>= 0; d >>>= 0; 
-      var t = (a + b) | 0;
-      a = b ^ b >>> 9;
-      b = c + (c << 3) | 0;
-      c = (c << 21 | c >>> 11);
-      d = d + 1 | 0;
-      t = t + d | 0;
-      c = c + t | 0;
-      return (t >>> 0) / 4294967296;
-    }
-}
 
 function addSchema(name, draw) {
     postMessage({ op: 'addSchema', name, thumb: thumb(draw) });
     schemas[name] = { draw };
 }
 
-importScripts(
-    "lines.js",
-    "dial.js",
-    "datetime.js",
-    "roman.js",
-    "maze.js",
-    "sprite.js",
-    "bloom.js",
-    "circles.js",
-    "planets.js",
-    "circlebara.js",
-    "circlebarb.js",
-    "lemonjelly.js",
-);
+
+import { draw as drawBloom } from "./designs/bloom.js";
+addSchema("Bloom", drawBloom);
+
+import { draw as drawLemonJelly } from "./designs/lemonjelly.js";
+addSchema("Lemon Jelly", drawLemonJelly);
+
+import { draw as drawCircleBarA } from "./designs/circlebara.js";
+addSchema("Circle Bar A", drawCircleBarA);
+
+import { draw as drawCircleBarB } from "./designs/circlebarb.js";
+addSchema("Circle Bar B", drawCircleBarB);
+
+import { draw as drawCircles } from "./designs/circles.js";
+addSchema("Circles", drawCircles);
+
+import { draw as drawDateTime } from "./designs/datetime.js";
+addSchema("Mondaine", drawDateTime);
+
+import { draw as drawDial } from "./designs/dial.js";
+addSchema("Ugly Dial", drawDial);
+
+import { draw as drawLines } from "./designs/lines.js";
+addSchema("Ugly Lines", drawLines);
+
+import { draw as drawWilsonMaze } from "./designs/maze.js";
+addSchema("Wilson's Maze", drawWilsonMaze);
+
+import { draw as drawPlanets } from "./designs/planets.js";
+addSchema("Planets", drawPlanets);
+
+import { draw as drawRoman } from "./designs/roman.js";
+addSchema("Roman Numerals", drawRoman);
+
+import { draw as drawSprite } from "./designs/sprite.js";
+addSchema("Sprite", drawSprite);
 
 postMessage({ op: 'initialized' });
