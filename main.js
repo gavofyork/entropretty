@@ -18,7 +18,6 @@ function addSchema(name, draw) {
     console.log("Adding schema", name);
     schemas[name] = { draw };
 }
-schemaNames.forEach(name => import('./' + name));
 
 import('./svgcanvas.js');
 
