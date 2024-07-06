@@ -117,7 +117,7 @@ function exportSvg() {
     let schema = schemas[schemaName];
     let context = new window.C2S(100, 100);
     let seed = seeds[index[0]][index[1]];
-    doDraw(context, schema, seed, 100, 100);
+    drawItem(context, schema, seed, 100, 100);
     let svg = context.getSerializedSvg();
 
     let a = document.createElement('a');
