@@ -154,11 +154,8 @@ function customChanged() {
 }
 
 function resetArtist() {
-    if (artist) {
-        console.log("Timing out");
-        artist.terminate();
-    }
-    artist = new Worker('artist.js');
+    if (artist) artist.terminate();
+    artist = new Worker('artist.js', {type: 'module'});
     artist.onmessage = onArtistMessage;
     artistTimeout = null;
     ongoing = 0;
