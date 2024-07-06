@@ -45,7 +45,7 @@ function drawDateTime(ctx, seed) {
       ctx.lineTo(0, -0.65);
       ctx.stroke();
       ctx.beginPath();
-      ctx.arc(0, -0.65, 0.075, 0, 10);
+      ctx.arc(0, -0.65, 0.075, 0, Math.PI * 2);
       ctx.fill();
       ctx.restore();
       ctx.arc(0, 0, 0.03, 0, 10);
@@ -59,12 +59,12 @@ function drawDateTime(ctx, seed) {
 
     ctx.strokeStyle = '#aaa';
     ctx.beginPath();
-    ctx.arc(0, 0, 1.05, 0, 10);
+    ctx.arc(0, 0, 1.05, 0, Math.PI * 2);
     ctx.lineWidth = 0.08;
     ctx.stroke();
     ctx.strokeStyle = '#888';
     ctx.beginPath();
-    ctx.arc(0, 0, 1.0, 0, 10);
+    ctx.arc(0, 0, 1.0, 0, Math.PI * 2);
     ctx.lineWidth = 0.02;
     ctx.stroke();
 

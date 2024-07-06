@@ -35,3 +35,18 @@ html, body {
 .monaco-editor {
     position: absolute !important;
 }
+#modes {
+    display: flex;
+    flex-direction: row;
+    height: 50px;
+    padding: 10px 7px;
+}
+#modes div {
+    border: white 2px solid;
+    padding: 4px 3px;
+    margin: 0 3px;
+    text-align: center;
+    min-width: 25px;
+    background: #222;
+    font-size: 20px;
+}

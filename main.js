@@ -9,6 +9,18 @@ let schemaName = null;
 let customChangeTimeout = null;
 let editor = null;
 let artistInitialized = false;
+let big = false;
+const EXPORT_SIZE = 8000;
+
+var schemas = { '[Custom]': { draw: null } };
+function addSchema(name, draw) {
+    name.replace(/\W/g, '');
+    console.log("Adding schema", name);
+    schemas[name] = { draw };
+}
+schemaNames.forEach(name => import('./' + name));
+
+import('./svgcanvas.js');
 
 function load() {
     require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.26.1/min/vs' }});
@@ -74,6 +86,16 @@ function clicked(e) {
     ensureUpdated();
 }
 
+function bigMode() {
+    big = true;
+    rerender();
+}
+
+function smallMode() {
+    big = false;
+    rerender();
+}
+
 function selectSchema(name) {
     if (schemaName == name) return;
     if (schemaName) {
@@ -85,6 +107,24 @@ function selectSchema(name) {
     if (e.scrollIntoViewIfNeeded) e.scrollIntoViewIfNeeded();
     window.localStorage.setItem('schemaName', name);
     rerender();
+}
+
+function exportPng() {
+//    artist.postMessage({ op: 'render', note: 'export', schemaName, seed: seeds[index[0]][index[1]], width: 12000, height: 18600});
+    artist.postMessage({ op: 'render', note: 'export', schemaName, seed: seeds[index[0]][index[1]], width: 2000, height: 2000});
+}
+
+function exportSvg() {
+    let schema = schemas[schemaName];
+    let context = new window.C2S(100, 100);
+    let seed = seeds[index[0]][index[1]];
+    doDraw(context, schema, seed, 100, 100);
+    let svg = context.getSerializedSvg();
+
+    let a = document.createElement('a');
+    a.download = `${schemaName}-${seed}.svg`;
+    a.href = URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml' }));
+    a.click();
 }
 
 function updateCustom() {
@@ -102,18 +142,22 @@ function updateCustom() {
         .replace('°', ' * Math.PI * 2')
         .slice(0, -suffix.length) + "} draw";
     console.log("Main: Updating custom...");
-    artist.postMessage({ op: 'updateCustom', code });
+    schemas['[Custom]'].draw = eval(code);
+    artist.postMessage({ op: 'updateCustom', code, thumb: !big });
 }
 
 function customChanged() {
     updateCustom();
     if (seeds) selectSchema('[Custom]');
     if (customChangeTimeout) window.clearTimeout(customChangeTimeout);
-    customChangeTimeout = window.setTimeout(() => { customChangeTimeout = null; rerender(); }, 300);
+    customChangeTimeout = window.setTimeout(() => { customChangeTimeout = null; rerender(); }, 1000);
 }
 
 function resetArtist() {
-    if (artist) artist.terminate();
+    if (artist) {
+        console.log("Timing out");
+        artist.terminate();
+    }
     artist = new Worker('artist.js');
     artist.onmessage = onArtistMessage;
     artistTimeout = null;
@@ -160,21 +204,39 @@ function rerender() {
     }
     artistTimeout = window.setTimeout(resetArtist, 500000);
     console.log(`Main: Rerendering ${schemaName}`);
-    for(var y = 0; y < 8; y++) {
-        for(var x = 0; x < 16; x++) {
-            ongoing++;
-            artist.postMessage({ op: 'render', schemaName, seed: seeds[y][x], size: 400 });
+    if (big) {
+        ongoing++;
+        artist.postMessage({ op: 'render', note: 'screen', schemaName, seed: seeds[index[0]][index[1]], width: 800, height: 800 });
+    } else {
+        for(var y = 0; y < 8; y++) {
+            for(var x = 0; x < 16; x++) {
+                ongoing++;
+                artist.postMessage({ op: 'render', note: 'screen', schemaName, seed: seeds[y][x], width: 400, height: 400 });
+            }
         }
     }
 }
 
 function onArtistMessage(e) {
     if (e.data.op == 'rendered') {
-        let { image, seed } = e.data;
-        renderCache[bits(seed)] = image;
-        ongoing = Math.max(0, ongoing - 1);
-        if (ongoing == 0) {
-            finishRender();
+        let { image, seed, note } = e.data;
+        if (note == "export") {
+            let downloadLink = document.createElement('a');
+            downloadLink.setAttribute('download', `${schemaName}-${seed}.png`);
+            let canvas = document.createElement('canvas');
+            canvas.width = e.data.width;
+            canvas.height = e.data.height;
+            canvas.getContext('2d').drawImage(image, 0, 0, canvas.width, canvas.height);
+            canvas.toBlob(function(blob) {
+              downloadLink.setAttribute('href', URL.createObjectURL(blob));
+              downloadLink.click();
+            });
+        } else {
+            renderCache[bits(seed)] = image;
+            ongoing = Math.max(0, ongoing - 1);
+            if (ongoing == 0) {
+                finishRender();
+            }
         }
     } else if (e.data.op == 'addSchema') {
         if (artistInitialized) return;
@@ -247,95 +309,35 @@ function paint() {
     ctx.fillStyle = '#444';
     ctx.fillRect(0, 0, 800 * 1.02, 800 * 1.12);
 
-    paintItem(ctx, seeds[index[0]][index[1]], 0, 0, 400);
-    for(var i = 0; i < 16; ++i) {
-        let x = i % 4;
-        let y = Math.floor(i / 4);
-        paintItem(ctx, seeds[index[0]][i], x * 100 * 1.02 + 400 * 1.02, y * 100 * 1.12, 100);
-    }
-    for(var y = 0; y < 8; y++) {
-        for(var x = 0; x < 16; x++) {
-            paintItem(ctx, seeds[y][x], x * 50 * 1.02, y * 50 * 1.12 + 400 * 1.12, 50);
+    if (big) {
+        paintItem(ctx, seeds[index[0]][index[1]], 0, 0, 800);
+    } else {
+        paintItem(ctx, seeds[index[0]][index[1]], 0, 0, 400);
+        for(var i = 0; i < 16; ++i) {
+            let x = i % 4;
+            let y = Math.floor(i / 4);
+            paintItem(ctx, seeds[index[0]][i], x * 100 * 1.02 + 400 * 1.02, y * 100 * 1.12, 100);
         }
-    }
-
-    let highlight = (x, y, s) => {
-        ctx.fillStyle = '#f002';
-        ctx.fillRect(x * s * 1.02, y * s * 1.12, s * 1.02, s * 1.12);
-        ctx.strokeStyle = '#f00f';
-        ctx.lineWidth = 1;
-        ctx.strokeRect(x * s * 1.02, y * s * 1.12, s * 1.02, s * 1.12);
-    };
-    ctx.save();
-    ctx.translate(400 * 1.02, 0);
-    highlight(index[1] % 4, Math.floor(index[1] / 4), 100);
-    ctx.restore();
-    ctx.save();
-    ctx.translate(0, 400 * 1.12);
-    highlight(index[1], index[0], 50);
-    ctx.restore();
-}
-
-let white = '#fff';
-let light = '#ccc';
-let dark = '#666';
-let black = '#000';
-let pi = Math.PI;
-function deg(x) { return x / 90 * 2 * Math.PI }
-function turn(x) { return 2 * Math.PI / x }
-function gray(x) {
-    return `rgba(${x}, ${x}, ${x}, 1)`;
-}
-
-function shade(x) {
-    if(x < 1) { return white }
-    if(x < 2) { return light }
-    if(x < 3) { return dark }
-    return black
-}
-
-function bit(seed, i) {
-    return (seed[Math.floor(i / 4) % 8] >> (i % 4)) & 1
-}
-
-
-function bits(seed, from = 0, to = 32) {
-    let r = 0;
-    for (let i = from; i < to; ++i) {
-        r = r << 1 | bit(seed, i);
-    }
-    if (r < 0) {
-        r = r * -2;
-    }
-    return r
-}
-
-function split(seed, parts) {
-    let r = [];
-    let last = 0;
-    for (let i = 0; i < parts; ++i) {
-        let next = Math.round((i + 1) * 32 / parts);
-        r.push(bits(seed, last, next));
-        last = next;
-    }
-    return r
-}
-
-function randSeed(nibbles = 8) {
-    let s = [];
-    for (var i = 0; i < nibbles; ++i) {
-        let n = Math.floor(Math.random() * 16);
-        s.push(n);
-    }
-    return s
-}
-
-function mutateBits(count) {
-    return (seed) => {
-        for(var b = 0; b < count; ++b) {
-            let bit = 2 ** Math.floor(Math.random() * 4);
-            let item = Math.floor(Math.random() * 8);
-            seed[item] ^= bit;
+        for(var y = 0; y < 8; y++) {
+            for(var x = 0; x < 16; x++) {
+                paintItem(ctx, seeds[y][x], x * 50 * 1.02, y * 50 * 1.12 + 400 * 1.12, 50);
+            }
         }
+
+        let highlight = (x, y, s) => {
+            ctx.fillStyle = '#f002';
+            ctx.fillRect(x * s * 1.02, y * s * 1.12, s * 1.02, s * 1.12);
+            ctx.strokeStyle = '#f00f';
+            ctx.lineWidth = 1;
+            ctx.strokeRect(x * s * 1.02, y * s * 1.12, s * 1.02, s * 1.12);
+        };
+        ctx.save();
+        ctx.translate(400 * 1.02, 0);
+        highlight(index[1] % 4, Math.floor(index[1] / 4), 100);
+        ctx.restore();
+        ctx.save();
+        ctx.translate(0, 400 * 1.12);
+        highlight(index[1], index[0], 50);
+        ctx.restore();
     }
 }

@@ -7,6 +7,8 @@
   <link href="main.css" rel="stylesheet" />
   <link rel="stylesheet" data-name="vs/editor/editor.main" href="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.20.0/min/vs/editor/editor.main.min.css">
   <title>Extropretty</title>
+  <script type="text/javascript" src="drawing.js"></script>
+  <script type="text/javascript" src="schemas.js"></script>
   <script type="text/javascript" src="main.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.26.1/min/vs/loader.min.js"></script>
 </head>
@@ -14,6 +16,11 @@
 <body onload="load()">
   <div id="main">
     <div id="schemas">
+      <div id="modes">
+        <div onclick="smallMode()">🍀</div>
+        <div onclick="bigMode()"/>🖥️</div>
+        <div onclick="exportPng()"/>➡️</div>
+      </div>
       <canvas id="thumb-[Custom]" width="100" height="100" onclick="selectSchema('[Custom]')">
     </div>
     <canvas id="canvas" width="816" height="896" onclick="clicked(event)" ondblclick="resetSeeds()"></canvas>

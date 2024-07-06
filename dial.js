@@ -11,4 +11,5 @@ function drawDial(ctx, seed) {
     }
 }
 
+console.log("Adding dial", typeof(window));
 addSchema("Ugly Dial", drawDial, 8);
