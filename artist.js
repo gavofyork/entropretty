@@ -1,7 +1,21 @@
 // Import all utils, to make them available to the code editor
-import { bits, bit, pi, shade, black, white, light, dark, split, gray, turn, deg } from "./utils.js";
+import {
+  bits,
+  bit,
+  pi,
+  shade,
+  black,
+  white,
+  light,
+  dark,
+  split,
+  gray,
+  turn,
+  sfc32,
+  deg,
+} from "./utils.js";
 
-let schemas = { '[Custom]': { draw: null } };
+let schemas = { "[Custom]": { draw: null } };
 let standardSeed = [14, 2, 16, 9, 2, 4, 9, 6];
 let context;
 
@@ -92,6 +106,9 @@ function addSchema(name, draw) {
     postMessage({ op: 'addSchema', name, thumb: thumb(draw) });
     schemas[name] = { draw };
 }
+
+import { draw as drawLemonJellyNext } from "./designs/lemonjellynext.js";
+addSchema("Lemon Jelly Next", drawLemonJellyNext);
 
 import { draw as drawBloom } from "./designs/bloom.js";
 addSchema("Bloom", drawBloom);
