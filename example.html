@@ -16,7 +16,7 @@
       <canvas id="canvas" width="640" height="640""/>
     </div>
     <script type="module">
-      import { draw } from "./out/lemonjelly.js";
+      import { draw } from "./out/lemonjellynext.js";
       function randSeed(nibbles = 8) {
         let s = [];
         for (var i = 0; i < nibbles; ++i) {
@@ -26,10 +26,17 @@
         return s;
       }
 
-      const context = document.getElementById("canvas").getContext("2d");
-      context.scale(640, 640);
-      draw(context, randSeed(8));
-      context.restore();
+      const canvas= document.getElementById("canvas");
+      const width = canvas.width
+      const height = canvas.height
+
+      const ctx = canvas.getContext("2d");
+
+      ctx.scale(width, height);
+      ctx.aspect = width/height;
+
+      draw(ctx, randSeed(8));
+      ctx.restore();
     </script>
   </body>
 </html>

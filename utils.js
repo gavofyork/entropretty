@@ -69,3 +69,22 @@ export function split(seed, parts) {
   }
   return r;
 }
+
+export function randSeed(nibbles = 8) {
+    let s = [];
+    for (var i = 0; i < nibbles; ++i) {
+        let n = Math.floor(Math.random() * 16);
+        s.push(n);
+    }
+    return s
+}
+
+export function mutateBits(count) {
+    return (seed) => {
+        for(var b = 0; b < count; ++b) {
+            let bit = 2 ** Math.floor(Math.random() * 4);
+            let item = Math.floor(Math.random() * 8);
+            seed[item] ^= bit;
+        }
+    }
+}
