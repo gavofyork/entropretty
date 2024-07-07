@@ -157,7 +157,7 @@ function resetArtist() {
         console.log("Timing out");
         artist.terminate();
     }
-    artist = new Worker('artist.js');
+    artist = new Worker('artist.js', {'type': 'module'});
     artist.onmessage = onArtistMessage;
     artistTimeout = null;
     ongoing = 0;
@@ -339,4 +339,38 @@ function paint() {
         highlight(index[1], index[0], 50);
         ctx.restore();
     }
+}
+
+// copied from utils as unable to import js module in common js
+const white = "#fff";
+const light = "#ccc";
+const dark = "#666";
+const black = "#000";
+
+function shade(x) {
+  if (x < 1) {
+    return white;
+  }
+  if (x < 2) {
+    return light;
+  }
+  if (x < 3) {
+    return dark;
+  }
+  return black;
+}
+
+function bit(seed, i) {
+  return (seed[Math.floor(i / 4) % 8] >> i % 4) & 1;
+}
+
+function bits(seed, from = 0, to = 32) {
+  let r = 0;
+  for (let i = from; i < to; ++i) {
+    r = (r << 1) | bit(seed, i);
+  }
+  if (r < 0) {
+    r = r * -2;
+  }
+  return r;
 }
