@@ -107,14 +107,12 @@ function addSchema(name, draw) {
     schemas[name] = { draw };
 }
 
-import { draw as drawLemonJellyNext } from "./designs/lemonjellynext.js";
-addSchema("Lemon Jelly Next", drawLemonJellyNext);
-
-import { draw as drawBloom } from "./designs/bloom.js";
-addSchema("Bloom", drawBloom);
 
 import { draw as drawLemonJelly } from "./designs/lemonjelly.js";
 addSchema("Lemon Jelly", drawLemonJelly);
+
+import { draw as drawBloom } from "./designs/bloom.js";
+addSchema("Bloom", drawBloom);
 
 import { draw as drawCircleBarA } from "./designs/circlebara.js";
 addSchema("Circle Bar A", drawCircleBarA);
