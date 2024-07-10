@@ -58,7 +58,7 @@ export function draw(ctx, seed) {
       1 / 2 +
       ((i + 1) * s + sun_r) *
         Math.sin((planet_rot_outer_to_inner[i] * Math.PI) / 4);
-    console.log("Planet at:", pX, pY);
+
     let radius = r / 2 + (r / 2) * planet_size_outer_to_inner[i];
     ctx.arc(pX, pY, radius, 0, 2 * Math.PI);
     ctx.stroke();
