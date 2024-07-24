@@ -3,7 +3,7 @@
   "type": "module",
   "scripts": {
     "build": "npm run bundle",
-    "bundle": "rm -rf ./out && pnpm rollup -c rollup.config.js",
+    "bundle":"for file in ./designs/*.js; do rollup -i $file -o out/$(basename $file) -f es -p 'terser={mangle: {reserved: [\"draw\"]}}';  done",
     "start": "npx serve ."
   },
   "devDependencies": {
