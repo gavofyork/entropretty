@@ -1,4 +1,7 @@
+import { bytesToNibbles } from "../utils.js";
+
 export function draw(ctx, seed) {
+  seed = bytesToNibbles(seed)
   ctx.scale(0.5, 0.5);
   ctx.translate(1, 1);
   ctx.lineWidth = 0.04;

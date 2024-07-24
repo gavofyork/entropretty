@@ -181,7 +181,7 @@ function resetSeeds() {
     let mutate = mutateBits(3);
     seeds = [];
     for(var i = 0; i < 8; ++i) {
-        let run = [randSeed(8)];
+        let run = [randSeed(4)];
         for(var j = 0; j < 15; ++j) {
             run.push(run.slice(-1)[0].slice());
             mutate(run.slice(-1)[0]);
@@ -385,10 +385,10 @@ function mutateBits(count) {
     }
 }
 
-function randSeed(nibbles = 8) {
+function randSeed(bytes = 4) {
     let s = [];
-    for (var i = 0; i < nibbles; ++i) {
-        let n = Math.floor(Math.random() * 16);
+    for (var i = 0; i < bytes; ++i) {
+        let n = Math.floor(Math.random() * 255);
         s.push(n);
     }
     return s

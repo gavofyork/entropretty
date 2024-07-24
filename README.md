@@ -12,7 +12,7 @@ Just view the `index.html` file in a browser locally.
 
 ## Playing around
 
-1. Create a new `.js` file with a unique name, for example `foo.js`. 
+1. Create a new `.js` file with a unique name, for example `foo.js`.
 2. Implement a draw function (see below) and call it something like `drawFoo`.
 3. Put a call to `addSchema("Foo", drawFoo)` at the bottom. See below for the additional arguments.
 4. Introduce a new line right before `</body>` in `index.html`:
@@ -27,7 +27,7 @@ The `addSchema` function accepts up to 4 arguments (the last two are optional):
 
 - `name`: The name of your schema.
 - `draw`: The function to draw a figure, see below.
-- `nibbles`: The number of nibbles of entropy your schema can place into a figure. It is best to make this at least 4 but preferably the maximum and default which is 8.
+- `bytes`: The number of bytes of entropy your schema can place into a figure. It is best to make this at least 2 but preferably the maximum and default which is 4.
 - `mutate`: A function for mutating a seed. This defaults to the flip of three random bits.
 
 ### Seeds

@@ -1,6 +1,7 @@
-import { bits, sfc32 } from "../utils.js";
+import { bits, sfc32,bytesToNibbles } from "../utils.js";
 
 export function draw(t, a) {
+  a = bytesToNibbles(a)
   let l = sfc32(bits(a), bits(a), bits(a), bits(a)),
     e = {
       t: 50,
