@@ -46,9 +46,8 @@
       ctx.aspect = width / height;
 
       const seedBytes = randSeed(4)
-      const seedNibbles = bytesToNibbles(seedBytes)
 
-      draw(ctx, seedNibbles);
+      draw(ctx, seedBytes);
       ctx.restore();
     </script>
   </body>

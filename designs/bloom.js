@@ -19,7 +19,7 @@ function drawPetals(ctx, count, bias, sway, width, shade) {
 }
 
 export function draw(ctx, seed) {
-  seed = bytesToNibbles(seed)
+  seed = bytesToNibbles(seed);
   ctx.translate(0.5, 0.5);
   ctx.scale(0.5, 0.5);
 

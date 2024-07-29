@@ -1,6 +1,7 @@
-import { dark, black, light } from "../utils.js";
+import { dark, black, light, bytesToNibbles } from "../utils.js";
 
 export function draw(ctx, seed) {
+  seed = bytesToNibbles(seed);
   ctx.lineWidth = 0.04;
   ctx.strokeStyle = light;
   ctx.beginPath();
