@@ -1,6 +1,7 @@
-import { bits } from "../utils.js";
+import { bits, bytesToNibbles } from "../utils.js";
 
 export function draw(ctx, seed) {
+  seed = bytesToNibbles(seed);
   let size = 1;
   ctx.fillStyle = "black";
   ctx.textAlign = "center";

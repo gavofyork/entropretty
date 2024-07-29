@@ -1,6 +1,7 @@
-import { sfc32, bits } from "../utils.js";
+import { sfc32, bits, bytesToNibbles } from "../utils.js";
 
 export function draw(ctx, seed) {
+  seed = bytesToNibbles(seed);
   let rng = sfc32(bits(seed), bits(seed), bits(seed), bits(seed));
   let points = [];
   let disc = (x, y, r) => {

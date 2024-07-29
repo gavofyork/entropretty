@@ -1,4 +1,4 @@
-import { split } from "../utils.js";
+import { split, bytesToNibbles } from "../utils.js";
 
 function drawComponent(ctx, px, py, shadow, scale) {
   if (shadow) {
@@ -18,6 +18,7 @@ function drawComponent(ctx, px, py, shadow, scale) {
   }
 }
 export function draw(ctx, seed) {
+  seed = bytesToNibbles(seed);
   let size = 1;
   let item = split(seed, 1)[0]; // 5000060;
   //    console.log(item);

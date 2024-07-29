@@ -70,13 +70,23 @@ export function split(seed, parts) {
   return r;
 }
 
-export function randSeed(nibbles = 8) {
+export function randSeed(bytes = 4) {
     let s = [];
-    for (var i = 0; i < nibbles; ++i) {
-        let n = Math.floor(Math.random() * 16);
+    for (var i = 0; i < bytes; ++i) {
+        let n = Math.floor(Math.random() * 255);
         s.push(n);
     }
     return s
+}
+
+export function bytesToNibbles(bytes) {
+  const nibbles = [];
+  for (let i = 0; i < bytes.length; i++) {
+    // Split each 8-bit number into two 4-bit numbers
+    nibbles.push((bytes[i] >> 4) & 0xf); // Upper 4 bits
+    nibbles.push(bytes[i] & 0xf); // Lower 4 bits
+  }
+  return nibbles;
 }
 
 export function mutateBits(count) {
