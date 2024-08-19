@@ -147,9 +147,8 @@ addSchema("Roman Numerals", drawRoman);
 import { draw as drawSprite } from "./designs/sprite.js";
 addSchema("Sprite", drawSprite);
 
-
-import { drawSprite } from "./designs/squares.js";
-addSchema("Squares (Mono)", drawSquares(true));
+import { draw as drawSquares } from "./designs/squares.js";
 addSchema("Squares (Color)", drawSquares(false));
+addSchema("Squares (Mono)", drawSquares(true));
 
 postMessage({ op: 'initialized' });

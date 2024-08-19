@@ -117,6 +117,24 @@ function selectSchema(name) {
 	rerender();
 }
 
+function exportPng() {
+//    artist.postMessage({ op: 'render', note: 'export', schemaName, seed: seeds[index[0]][index[1]], width: 12000, height: 18600});
+	artist.postMessage({ op: 'render', note: 'export', schemaName, seed: seeds[index[0]][index[1]], width: 2000, height: 2000});
+}
+
+function exportSvg() {
+	let schema = schemas[schemaName];
+	let context = new window.C2S(100, 100);
+	let seed = seeds[index[0]][index[1]];
+	drawItem(context, schema, seed, 100, 100);
+	let svg = context.getSerializedSvg();
+
+	let a = document.createElement('a');
+	a.download = `${schemaName}-${seed}.svg`;
+	a.href = URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml' }));
+	a.click();
+}
+
 function updateCustom() {
 	let customCode = editor.getValue().trim();
 	let prefix = "function draw(ctx, seed) {\n";

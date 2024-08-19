@@ -43,7 +43,6 @@ export function bits(seed, from = 0, to = 32) {
 }
 
 export function sfc32(a, b, c, d) {
-  console.log(a, b, c, d);
   return function () {
     a >>>= 0;
     b >>>= 0;
