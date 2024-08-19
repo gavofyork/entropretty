@@ -1,13 +1,27 @@
 // Import all utils, to make them available to the code editor
-import { bits, bit, pi,shade, black, white, light, dark, split, gray, turn, deg } from "./utils.js";
+import {
+  bits,
+  bit,
+  pi,
+  shade,
+  black,
+  white,
+  light,
+  dark,
+  split,
+  gray,
+  turn,
+  sfc32,
+  deg,
+} from "./utils.js";
 
-let schemas = { '[Custom]': { draw: null } };
+let schemas = { "[Custom]": { draw: null } };
 let standardSeed = [14, 2, 16, 9, 2, 4, 9, 6];
 let context;
 
 function thumb(draw) {
     let canvas = new OffscreenCanvas(100, 100);
-    doDraw(canvas.getContext('2d'), {draw}, standardSeed, 100, 100);
+    drawItem(canvas.getContext('2d'), {draw}, standardSeed, 100, 100);
     return canvas.transferToImageBitmap();
 }
 
@@ -16,7 +30,7 @@ onmessage = function(e) {
         let { schemaName, note, seed, width, height } = e.data;
         let schema = schemas[schemaName];
         let canvas = new OffscreenCanvas(width, height);
-        doDraw(canvas.getContext('2d'), schema, seed, width, height);
+        drawItem(canvas.getContext('2d'), schema, seed, width, height);
         let image = canvas.transferToImageBitmap();
         postMessage({ op: 'rendered', note, image, seed, width, height });
     } else if (e.data.op == 'updateCustom') {
@@ -34,11 +48,11 @@ onmessage = function(e) {
     }
 };
 
-function drawItem(ctx, schema, seed, size) {
+function drawItem(ctx, schema, seed, width, height) {
     ctx.save();
     ctx.fillStyle = 'white';
-    ctx.scale(size, size);
-    ctx.fillRect(0, 0, 1, 1);
+    ctx.scale(width, width);
+    ctx.fillRect(0, 0, 1, height / width);
     ctx.lineWidth = 0.01;
     ctx.lineCap = 'butt';
     ctx.lineJoin = 'miter';
@@ -48,6 +62,7 @@ function drawItem(ctx, schema, seed, size) {
     ctx.textBaseline = 'middle';
     try {
         context = ctx;
+        ctx.aspect = height / width;
         schema.draw(ctx, seed);
         context = null;
     }
@@ -59,13 +74,32 @@ function drawItem(ctx, schema, seed, size) {
         ctx.strokeStyle = 'black';
         ctx.beginPath();
         ctx.moveTo(0, 0);
-        ctx.lineTo(1, 1);
-        ctx.moveTo(0, 1);
+        ctx.lineTo(1, height / width);
+        ctx.moveTo(0, height / width);
         ctx.lineTo(1, 0);
         ctx.stroke();
     }
     ctx.restore();
 }
+
+Object.defineProperty(Array.prototype, 'strokeEach', {
+    value: function(f) {
+        this.forEach((e, i) => {
+            context.beginPath();
+            f(e, i);
+            context.stroke();
+        });
+    }
+});
+Object.defineProperty(Array.prototype, 'fillEach', {
+    value: function(f) {
+        this.forEach((e, i) => {
+            context.beginPath();
+            f(e, i);
+            context.fill();
+        });
+    }
+});
 
 function addSchema(name, draw) {
     name.replace(/\W/g, '');
@@ -74,11 +108,11 @@ function addSchema(name, draw) {
 }
 
 
-import { draw as drawBloom } from "./designs/bloom.js";
-addSchema("Bloom", drawBloom);
-
 import { draw as drawLemonJelly } from "./designs/lemonjelly.js";
 addSchema("Lemon Jelly", drawLemonJelly);
+
+import { draw as drawBloom } from "./designs/bloom.js";
+addSchema("Bloom", drawBloom);
 
 import { draw as drawCircleBarA } from "./designs/circlebara.js";
 addSchema("Circle Bar A", drawCircleBarA);
@@ -106,6 +140,9 @@ addSchema("Planets", drawPlanets);
 
 import { draw as drawRoman } from "./designs/roman.js";
 addSchema("Roman Numerals", drawRoman);
+
+//import { draw as drawRingers } from "./designs/ringers.js";
+//addSchema("Ringers", drawRingers);
 
 import { draw as drawSprite } from "./designs/sprite.js";
 addSchema("Sprite", drawSprite);

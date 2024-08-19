@@ -1,4 +1,4 @@
-import { bits, light } from "../utils.js";
+import { bits, light, bytesToNibbles } from "../utils.js";
 
 let patterns = [
   [
@@ -177,6 +177,7 @@ function deadend(cell, cells, last) {
 }
 
 export function draw(ctx, seed) {
+  seed = bytesToNibbles(seed);
   let size = 1;
   let cols = 16;
   let rows = cols;

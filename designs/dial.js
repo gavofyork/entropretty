@@ -1,5 +1,6 @@
-import { dark } from "../utils.js";
+import { dark, bytesToNibbles } from "../utils.js";
 export function draw(ctx, seed) {
+  seed = bytesToNibbles(seed);
   let size = 1;
   for (var i = 0; i < 4; i++) {
     ctx.lineWidth = size / 20;

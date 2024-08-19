@@ -1,4 +1,4 @@
-import { bit, bits } from "../utils.js";
+import { bit, bits, bytesToNibbles } from "../utils.js";
 // Index 0 is treated as MSB:
 // [0]: Sun / Black Hole
 // [1, 5]: Orbit Dash Outer - 0: No Dash, 1: Dash
@@ -6,6 +6,7 @@ import { bit, bits } from "../utils.js";
 // [21, 25]: Planet Clr Outer - 0: White, 1: Black
 // [26, 30]: Planet Size Outer - n: n * x + y
 export function draw(ctx, seed) {
+  seed = bytesToNibbles(seed);
   const range = (len) =>
     Array(len)
       .fill(0)
@@ -58,7 +59,7 @@ export function draw(ctx, seed) {
       1 / 2 +
       ((i + 1) * s + sun_r) *
         Math.sin((planet_rot_outer_to_inner[i] * Math.PI) / 4);
-    console.log("Planet at:", pX, pY);
+
     let radius = r / 2 + (r / 2) * planet_size_outer_to_inner[i];
     ctx.arc(pX, pY, radius, 0, 2 * Math.PI);
     ctx.stroke();

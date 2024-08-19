@@ -43,6 +43,7 @@ export function bits(seed, from = 0, to = 32) {
 }
 
 export function sfc32(a, b, c, d) {
+  console.log(a, b, c, d);
   return function () {
     a >>>= 0;
     b >>>= 0;
@@ -68,4 +69,33 @@ export function split(seed, parts) {
     last = next;
   }
   return r;
+}
+
+export function randSeed(bytes = 4) {
+    let s = [];
+    for (var i = 0; i < bytes; ++i) {
+        let n = Math.floor(Math.random() * 255);
+        s.push(n);
+    }
+    return s
+}
+
+export function bytesToNibbles(bytes) {
+  const nibbles = [];
+  for (let i = 0; i < bytes.length; i++) {
+    // Split each 8-bit number into two 4-bit numbers
+    nibbles.push((bytes[i] >> 4) & 0xf); // Upper 4 bits
+    nibbles.push(bytes[i] & 0xf); // Lower 4 bits
+  }
+  return nibbles;
+}
+
+export function mutateBits(count) {
+    return (seed) => {
+        for(var b = 0; b < count; ++b) {
+            let bit = 2 ** Math.floor(Math.random() * 8);
+            let item = Math.floor(Math.random() * 4);
+            seed[item] ^= bit;
+        }
+    }
 }

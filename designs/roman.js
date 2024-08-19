@@ -1,4 +1,4 @@
-import { split } from "../utils.js";
+import { split, bytesToNibbles } from "../utils.js";
 function roman(n) {
   let d = [
     "M",
@@ -41,6 +41,7 @@ function roman(n) {
 }
 
 export function draw(ctx, seed) {
+  seed = bytesToNibbles(seed);
   let size = 1;
   let numbers = split(seed, 3);
   ctx.strokeStyle = "";
