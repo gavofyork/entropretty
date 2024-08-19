@@ -43,6 +43,7 @@ export function bits(seed, from = 0, to = 32) {
 }
 
 export function sfc32(a, b, c, d) {
+  console.log(a, b, c, d);
   return function () {
     a >>>= 0;
     b >>>= 0;
@@ -92,8 +93,8 @@ export function bytesToNibbles(bytes) {
 export function mutateBits(count) {
     return (seed) => {
         for(var b = 0; b < count; ++b) {
-            let bit = 2 ** Math.floor(Math.random() * 4);
-            let item = Math.floor(Math.random() * 8);
+            let bit = 2 ** Math.floor(Math.random() * 8);
+            let item = Math.floor(Math.random() * 4);
             seed[item] ^= bit;
         }
     }

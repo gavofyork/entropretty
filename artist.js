@@ -141,6 +141,9 @@ addSchema("Planets", drawPlanets);
 import { draw as drawRoman } from "./designs/roman.js";
 addSchema("Roman Numerals", drawRoman);
 
+//import { draw as drawRingers } from "./designs/ringers.js";
+//addSchema("Ringers", drawRingers);
+
 import { draw as drawSprite } from "./designs/sprite.js";
 addSchema("Sprite", drawSprite);
 
