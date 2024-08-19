@@ -4,8 +4,8 @@ function drawSquares(monochrome) {
 	return (ctx, seed) => doDrawSquares(ctx, seed, monochrome);
 }
 
-addSchema("Squares Pentachrome", drawSquares(false));
-addSchema("Squares Monochrome", drawSquares(true));
+//addSchema("Squares Pentachrome", drawSquares(false));
+//addSchema("Squares Monochrome", drawSquares(true));
 
 function doDrawSquares(ctx, seed, monochrome) {
 	let rng = sfc32(bits(seed),bits(seed),bits(seed),bits(seed));

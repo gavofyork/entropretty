@@ -14,6 +14,11 @@
 <body onload="load()">
   <div id="main">
     <div id="schemas">
+      <div id="modes">
+        <div onclick="smallMode()">🍀</div>
+        <div onclick="bigMode()"/>🖥️</div>
+        <div onclick="exportPng()"/>➡️</div>
+      </div>
       <canvas id="thumb-[Custom]" width="100" height="100" onclick="selectSchema('[Custom]')">
     </div>
     <canvas id="canvas" width="816" height="896" onclick="clicked(event)" ondblclick="resetSeeds()"></canvas>

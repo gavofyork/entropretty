@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+  <head />
+
+  <body>
+    <div
+      id="main"
+      style="
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100vw;
+        height: 100vh;
+      "
+    >
+      <canvas id="canvas" width="640" height="640""/>
+    </div>
+    <script type="module">
+      import { draw } from "./out/bloom.js";
+      function randSeed(bytes = 4) {
+        let s = [];
+        for (var i = 0; i < bytes; ++i) {
+          let n = Math.floor(Math.random() * 255);
+          s.push(n);
+        }
+        return s;
+      }
+
+      function bytesToNibbles(bytes) {
+        const nibbles = [];
+        for (let i = 0; i < bytes.length; i++) {
+          // Split each 8-bit number into two 4-bit numbers
+          nibbles.push((bytes[i] >> 4) & 0xf); // Upper 4 bits
+          nibbles.push(bytes[i] & 0xf); // Lower 4 bits
+        }
+        return nibbles;
+      }
+
+      const canvas = document.getElementById("canvas");
+      const width = canvas.width;
+      const height = canvas.height;
+
+      const ctx = canvas.getContext("2d");
+
+      ctx.scale(width, height);
+      ctx.aspect = width / height;
+
+      const seedBytes = randSeed(4)
+
+      draw(ctx, seedBytes);
+      ctx.restore();
+    </script>
+  </body>
+</html>
