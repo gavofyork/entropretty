@@ -3,11 +3,13 @@
   "type": "module",
   "scripts": {
     "build": "npm run bundle",
-    "bundle":"for file in ./designs/*.js; do rollup -i $file -o out/$(basename $file) -f es -p 'terser={mangle: {reserved: [\"draw\"]}}';  done",
+    "bundle": "for file in ./designs/*.js; do rollup -i $file -o out/$(basename $file) -f es -p 'terser={mangle: {reserved: [\"draw\"]}}';  done",
     "start": "npx serve ."
   },
   "devDependencies": {
     "@rollup/plugin-terser": "^0.4.4",
     "rollup": "^4.18.1"
+  },
+  "dependencies": {
   }
 }
