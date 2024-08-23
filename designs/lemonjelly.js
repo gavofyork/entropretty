@@ -1,10 +1,7 @@
-import { bits, sfc32, bytesToNibbles } from "../utils.js";
+import { rng } from "../utils.js";
 
 export function draw(t, a) {
-  console.log(a);
-//  a = bytesToNibbles(a);
-  console.log(a);
-  let l = sfc32(bits(a), bits(a), bits(a), bits(a)),
+  let l = rng(a),
     e = {
       t: 50,
       l: "round",

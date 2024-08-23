@@ -63,6 +63,7 @@ function drawItem(ctx, schema, seed, width, height) {
     try {
         context = ctx;
         ctx.aspect = height / width;
+        console.log("Artist: Drawing", seed);
         schema.draw(ctx, seed);
         context = null;
     }
