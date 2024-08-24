@@ -158,4 +158,7 @@ addSchema("Poly", drawPoly);
 import { draw as drawSplit } from "./designs/split.js";
 addSchema("Split", drawSplit);
 
+import { draw as drawKins } from "./designs/kins.js";
+addSchema("Kins", drawKins);
+
 postMessage({ op: 'initialized' });
