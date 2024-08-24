@@ -155,4 +155,7 @@ addSchema("Squares (Mono)", drawSquares(true));
 import { draw as drawPoly } from "./designs/poly.js";
 addSchema("Poly", drawPoly);
 
+import { draw as drawSplit } from "./designs/split.js";
+addSchema("Split", drawSplit);
+
 postMessage({ op: 'initialized' });
