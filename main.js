@@ -265,11 +265,11 @@ function onArtistMessage(e) {
 			ctx.fillStyle = "black";
 			ctx.textAlign = "left";
 			ctx.textBaseline = "bottom";
-			ctx.font = "14px Palatino bold";
+			ctx.font = "bold 14px Palatino";
 			ctx.fillText(e.data.name, 0, 116, 100);
 			if (typeof e.data.artist == 'string') {
 				ctx.textAlign = "right";
-				ctx.font = "14px Palatino italic";
+				ctx.font = "italic 14px Palatino";
 				ctx.fillText('by ' + e.data.artist, 100, 130, 100);
 			}
 		} else {
