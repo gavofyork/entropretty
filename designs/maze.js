@@ -111,7 +111,7 @@ class Cell {
   faces(ctx, inc) {
     //Representing algorithm
     if (this.inMaze) ctx.fillStyle = "rgb(255, 255, 255)";
-    ctx.fillRect(this.i * inc, this.j * inc, inc, inc);
+//    ctx.fillRect(this.i * inc, this.j * inc, inc, inc);
   }
   blob(ctx, inc) {
     ctx.beginPath();
@@ -176,7 +176,7 @@ function deadend(cell, cells, last) {
   return null;
 }
 
-export function draw(ctx, seed) {
+function draw(ctx, seed) {
   seed = bytesToNibbles(seed);
   let size = 1;
   let cols = 16;
@@ -295,3 +295,5 @@ export function draw(ctx, seed) {
   start.blob(ctx, inc);
   end.blob(ctx, inc);
 }
+
+export const schema = { draw, name: "Wilson's Maze", artist: "gavofyork.dot" };

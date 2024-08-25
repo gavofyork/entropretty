@@ -1,7 +1,7 @@
-import { rng } from "../utils.js";
+import { randomGenerator } from "../utils.js";
 
-export function draw(t, a) {
-  let l = rng(a),
+function draw(t, a) {
+  let l = randomGenerator(a),
     e = {
       t: 50,
       l: "round",
@@ -333,3 +333,5 @@ export function draw(t, a) {
     }
   })(t, l, e);
 }
+
+export const schema = { draw, name: "Lemon Jelly", artist: "gavofyork.dot" };

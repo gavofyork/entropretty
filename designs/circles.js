@@ -1,8 +1,8 @@
-import { sfc32, bits, bytesToNibbles } from "../utils.js";
+import { randomGenerator, bytesToNibbles } from "../utils.js";
 
-export function draw(ctx, seed) {
+function draw(ctx, seed) {
   seed = bytesToNibbles(seed);
-  let rng = sfc32(bits(seed), bits(seed), bits(seed), bits(seed));
+  let rand = randomGenerator(seed);
   let points = [];
   let disc = (x, y, r) => {
     ctx.beginPath();
@@ -16,8 +16,8 @@ export function draw(ctx, seed) {
     ctx.stroke();
   };
   for (let i = 0; i < 10; ++i) {
-    let phi = rng() * Math.PI * 2;
-    let r = Math.sqrt(rng()) * 0.92;
+    let phi = rand() * Math.PI * 2;
+    let r = Math.sqrt(rand()) * 0.92;
     points.push({ x: Math.cos(phi) * r, y: Math.sin(phi) * r, phi });
   }
   ctx.strokeStyle = "gray";
@@ -34,3 +34,5 @@ export function draw(ctx, seed) {
     disc(x / 2 + 0.5, y / 2 + 0.5, 0.03);
   });
 }
+
+export const schema = { draw, name: "Circles", artist: "gavofyork.dot" };

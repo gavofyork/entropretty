@@ -1,5 +1,5 @@
 import { dark, bytesToNibbles } from "../utils.js";
-export function draw(ctx, seed) {
+function draw(ctx, seed) {
   seed = bytesToNibbles(seed);
   let size = 1;
   for (var i = 0; i < 4; i++) {
@@ -18,3 +18,5 @@ export function draw(ctx, seed) {
     ctx.stroke();
   }
 }
+
+export const schema = { draw, name: "Dial", artist: "gavofyork.dot" };

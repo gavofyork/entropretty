@@ -1,6 +1,6 @@
 import { split, bytesToNibbles } from "../utils.js";
 
-export function draw(ctx, seed) {
+function draw(ctx, seed) {
   seed = bytesToNibbles(seed);
   ctx.scale(0.5, 0.5);
   ctx.translate(1, 1);
@@ -14,3 +14,5 @@ export function draw(ctx, seed) {
       ctx.arc(0, 0, 0.92, (i / 32) * Math.PI * 2, ((i + 1) / 32) * Math.PI * 2);
   });
 }
+
+export const schema = { draw, name: "Circle Bar A", artist: "gavofyork.dot" };

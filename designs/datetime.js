@@ -1,16 +1,15 @@
 import { bits, bytesToNibbles } from "../utils.js";
 
-export function draw(ctx, seed) {
+function draw(ctx, seed) {
   seed = bytesToNibbles(seed);
   let size = 1;
   ctx.fillStyle = "black";
   ctx.textAlign = "center";
-  ctx.textBaseline = "bottom";
-  ctx.font = size / 4 + "px sans-serif";
+  ctx.font = size / 4 + "px Andale Mono";
   let secondsSinceEpoch = 3600 * 24 * 365.25 * 53;
   let dt = new Date((secondsSinceEpoch - bits(seed)) * 1000);
   let s = dt.toUTCString();
-  ctx.fillText(s.substr(5, 11), size / 2, size, size);
+  ctx.fillText(s.substr(5, 11), size / 2, size * 0.95, size);
   let hours = dt.getUTCHours();
   let minutes = dt.getUTCMinutes();
   let seconds = dt.getUTCSeconds();
@@ -90,3 +89,5 @@ export function draw(ctx, seed) {
 
   drawTime();
 }
+
+export const schema = { draw, name: "Mondaine", artist: "gavofyork.dot" };

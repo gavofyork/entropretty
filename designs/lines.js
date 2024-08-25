@@ -1,6 +1,6 @@
 import { dark, black, light, bytesToNibbles } from "../utils.js";
 
-export function draw(ctx, seed) {
+function draw(ctx, seed) {
   seed = bytesToNibbles(seed);
   ctx.lineWidth = 0.04;
   ctx.strokeStyle = light;
@@ -35,3 +35,5 @@ export function draw(ctx, seed) {
   }
   ctx.stroke();
 }
+
+export const schema = { draw, name: "Ugly Lines", artist: "gavofyork.dot" };

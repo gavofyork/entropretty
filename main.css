@@ -2,13 +2,13 @@ html, body {
     width:  100%;
     height: 100%;
     margin: 0;
-    background: #111;
+    background: #eee;
 }
 #main {
     display: flex;
     flex-direction: row;
     width: 100vw;
-    color: #bbb;
+    color: #eee;
     box-sizing: border-box;
     padding: 0;
     margin: 0;
@@ -28,9 +28,12 @@ html, body {
 }
 #schemas canvas {
     width: 100px;
-    height: 100px;
+    height: 130px;
     padding: 3px 10px;
     background-color: transparent;
+}
+#schemas canvas#customthumb {
+    height: 100px;
 }
 .monaco-editor {
     position: absolute !important;
