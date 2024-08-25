@@ -1,6 +1,6 @@
 import { bytesToNibbles } from "../utils.js";
 
-export function draw(ctx, seed) {
+function draw(ctx, seed) {
   seed = bytesToNibbles(seed);
   ctx.scale(0.5, 0.5);
   ctx.translate(1, 1);
@@ -18,3 +18,5 @@ export function draw(ctx, seed) {
     last = current;
   });
 }
+
+export const schema = { draw, name: "Circle Bar B", artist: "gavofyork.dot" };

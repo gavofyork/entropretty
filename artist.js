@@ -31,6 +31,11 @@ function thumb(draw) {
     drawItem(canvas.getContext('2d'), {draw}, standardSeed, 100, 100);
     return canvas.transferToImageBitmap();
 }
+function captionThumb(draw) {
+    let canvas = new OffscreenCanvas(100, 30);
+    draw(canvas.getContext('2d'), 100, 30);
+    return canvas.transferToImageBitmap();
+}
 
 onmessage = function(e) {
     if (e.data.op == 'render') {
@@ -56,9 +61,7 @@ onmessage = function(e) {
 
 function drawItem(ctx, schema, seed, width, height) {
     ctx.save();
-    ctx.fillStyle = 'white';
     ctx.scale(width, width);
-    ctx.fillRect(0, 0, 1, height / width);
     ctx.lineWidth = 0.01;
     ctx.lineCap = 'butt';
     ctx.lineJoin = 'miter';
@@ -109,69 +112,39 @@ Object.defineProperty(Array.prototype, 'fillEach', {
     }
 });
 
-function addSchema(name, draw) {
-    name.replace(/\W/g, '');
-    postMessage({ op: 'addSchema', name, thumb: thumb(draw) });
-    schemas[name] = { draw };
+function addSchema(schema, id) {
+    console.log('Adding schema', schema, Array.isArray(schema));
+    if (Array.isArray(schema)) {
+        schema.forEach((s, i) => addSchema(s, id + i))
+    } else {
+        id.replace(/\W/g, '');
+        let caption = schema.caption ? captionThumb(schema.caption) : null;
+        let message = { op: 'addSchema', id, thumb: thumb(schema.draw), name: schema.name, artist: schema.artist, caption };
+        postMessage(message);
+        schemas[id] = { draw: schema.draw };
+    }
 }
 
-
-import { draw as drawLjky } from "./designs/ljky.js";
-addSchema("LJ.ky", drawLjky);
-
-import { draw as drawLemonJelly } from "./designs/lemonjelly.js";
-addSchema("Lemon Jelly", drawLemonJelly);
-
-import { draw as drawBloom } from "./designs/bloom.js";
-addSchema("Bloom", drawBloom);
-
-import { draw as drawCircleBarA } from "./designs/circlebara.js";
-addSchema("Circle Bar A", drawCircleBarA);
-
-import { draw as drawCircleBarB } from "./designs/circlebarb.js";
-addSchema("Circle Bar B", drawCircleBarB);
-
-import { draw as drawCircles } from "./designs/circles.js";
-addSchema("Circles", drawCircles);
-
-import { draw as drawDateTime } from "./designs/datetime.js";
-addSchema("Mondaine", drawDateTime);
-
-import { draw as drawDial } from "./designs/dial.js";
-addSchema("Ugly Dial", drawDial);
-
-import { draw as drawLines } from "./designs/lines.js";
-addSchema("Ugly Lines", drawLines);
-
-import { draw as drawStar } from "./designs/star.js";
-addSchema("Star", drawStar);
-
-import { draw as drawWilsonMaze } from "./designs/maze.js";
-addSchema("Wilson's Maze", drawWilsonMaze);
-
-import { draw as drawPlanets } from "./designs/planets.js";
-addSchema("Planets", drawPlanets);
-
-import { draw as drawRoman } from "./designs/roman.js";
-addSchema("Roman Numerals", drawRoman);
-
-import { draw as drawRingers } from "./designs/ringers.js";
-addSchema("Ringers", drawRingers);
-
-import { draw as drawSprite } from "./designs/sprite.js";
-addSchema("Sprite", drawSprite);
-
-import { draw as drawSquares } from "./designs/squares.js";
-addSchema("Squares (Color)", drawSquares(false));
-addSchema("Squares (Mono)", drawSquares(true));
-
-import { draw as drawPoly } from "./designs/poly.js";
-addSchema("Poly", drawPoly);
-
-import { draw as drawSplit } from "./designs/split.js";
-addSchema("Split", drawSplit);
-
-import { draw as drawKins } from "./designs/kins.js";
-addSchema("Kins", drawKins);
-
+const DESIGNS = [
+    'bloom.js',
+    'circlebara.js',
+    'circlebarb.js',
+    'circles.js',
+    'datetime.js',
+    'dial.js',
+    'kins.js',
+    'lemonjelly.js',
+    'lines.js',
+    'maze.js',
+    'planets.js',
+    'poly.js',
+    'roman.js',
+    'split.js',
+    'sprite.js',
+    'squares.js',
+    'star.js',
+];
+for (let d in DESIGNS.sort()) {
+    addSchema((await import(`./designs/${DESIGNS[d]}`)).schema, d);
+}
 postMessage({ op: 'initialized' });

@@ -4,7 +4,7 @@ let cs, cs2;
 let rand;
 let context;
 
-export function draw(ctx, seed) {
+function draw(ctx, seed) {
     rand = getRNG(seed);
     context = ctx;
 
@@ -25,8 +25,6 @@ export function draw(ctx, seed) {
                 bo.circle(0.15)
             })
         );
-
-        
 
     let polygon = getPolygon();
     drawIterations(polygon);
@@ -317,3 +315,5 @@ const Box = class {
         }
     }
 };
+
+export const schema = { draw, name: "Poly", artist: "pifragile.gh" };

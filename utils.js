@@ -1,7 +1,7 @@
 import Prando from './prando.js';
 
 export const white = "#fff";
-export const light = "#ccc";
+export const light = "#aaa";
 export const dark = "#666";
 export const black = "#000";
 export const pi = Math.PI;
@@ -63,12 +63,20 @@ export function randomGenerator(seed) {
 }
 
 export function sfc32(a, b, c, d) {
-  var state = sha256("" + a + b + c + d + "");
-  let f = function () {
-    state = sha256(c);
-    return Number.parseInt(state.substring(0, 8), 16) / 0xffffffff
+  return function () {
+      a >>>= 0;
+      b >>>= 0;
+      c >>>= 0;
+      d >>>= 0;
+      var t = (a + b) | 0;
+      a = b ^ (b >>> 9);
+      b = (c + (c << 3)) | 0;
+      c = (c << 21) | (c >>> 11);
+      d = (d + 1) | 0;
+      t = (t + d) | 0;
+      c = (c + t) | 0;
+      return (t >>> 0) / 4294967296;
   };
-  return f
 }
 
 export function secureRandomGenerator(seed) {

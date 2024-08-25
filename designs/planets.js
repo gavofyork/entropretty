@@ -5,7 +5,7 @@ import { bit, bits, bytesToNibbles } from "../utils.js";
 // [6, 20]: Planet Rot Outer - [0, 1, 2]: 0, 45, 90, 135, 180, 225, 270, 315
 // [21, 25]: Planet Clr Outer - 0: White, 1: Black
 // [26, 30]: Planet Size Outer - n: n * x + y
-export function draw(ctx, seed) {
+function draw(ctx, seed) {
   seed = bytesToNibbles(seed);
   const range = (len) =>
     Array(len)
@@ -69,3 +69,5 @@ export function draw(ctx, seed) {
     planet_clr_outer_to_inner[i] ? ctx.fill() : ctx.stroke();
   }
 }
+
+export const schema = { draw, name: "Planets", artist: "ggwpez.gh" };

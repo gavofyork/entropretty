@@ -18,7 +18,7 @@ function drawPetals(ctx, count, bias, sway, width, shade) {
   ctx.restore();
 }
 
-export function draw(ctx, seed) {
+function draw(ctx, seed) {
   seed = bytesToNibbles(seed);
   ctx.translate(0.5, 0.5);
   ctx.scale(0.5, 0.5);
@@ -36,3 +36,5 @@ export function draw(ctx, seed) {
     );
   }
 }
+
+export const schema = { draw, name: "Bloom", artist: "gavofyork.dot" };

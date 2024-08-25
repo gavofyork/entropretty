@@ -40,16 +40,18 @@ function roman(n) {
   return result;
 }
 
-export function draw(ctx, seed) {
+function draw(ctx, seed) {
   seed = bytesToNibbles(seed);
   let size = 1;
   let numbers = split(seed, 3);
   ctx.strokeStyle = "";
   ctx.fillStyle = "black";
   ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
+  ctx.textBaseline = "bottom";
   ctx.font = size / 3 + "px serif";
   for (let i = 0; i < 3; ++i) {
-    ctx.fillText(roman(numbers[i]), size / 2, (size / 3) * i + size / 6, size);
+    ctx.fillText(roman(numbers[i]), size / 2, (size / 3) * (i + 1), size);
   }
 }
+
+export const schema = { draw, name: "Roman", artist: "gavofyork.dot" };

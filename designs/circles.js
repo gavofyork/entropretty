@@ -1,6 +1,6 @@
 import { randomGenerator, bytesToNibbles } from "../utils.js";
 
-export function draw(ctx, seed) {
+function draw(ctx, seed) {
   seed = bytesToNibbles(seed);
   let rand = randomGenerator(seed);
   let points = [];
@@ -34,3 +34,5 @@ export function draw(ctx, seed) {
     disc(x / 2 + 0.5, y / 2 + 0.5, 0.03);
   });
 }
+
+export const schema = { draw, name: "Circles", artist: "gavofyork.dot" };

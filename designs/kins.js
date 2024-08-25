@@ -48,7 +48,7 @@ gp = 2.34
 
 let NUM_ITERS = 100;
 
-export function draw(ctx, seed) {
+function draw(ctx, seed) {
     rand = getRNG(seed);
     context = ctx;
 
@@ -181,3 +181,5 @@ var Arm = Arm || {
     
     },
 };
+
+export const schema = { draw, name: "Kins", artist: "pifragile.gh" };

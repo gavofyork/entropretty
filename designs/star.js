@@ -1,6 +1,6 @@
-import { symmetrical } from "../utils.js";
+import { bits8, symmetrical } from "../utils.js";
 
-export function draw(ctx, seed) {
+function draw(ctx, seed) {
   ctx.lineWidth = 0.04;
   symmetrical(11, i => {
     ctx.beginPath();
@@ -14,3 +14,5 @@ export function draw(ctx, seed) {
     ctx.stroke();
   })
 }
+
+export const schema = { draw, name: "Star", artist: "gavofyork.dot" };

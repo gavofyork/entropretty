@@ -2,10 +2,6 @@
 
 import { sfc32, bits } from "../utils.js";
 
-export function draw(monochrome) {
-	return (ctx, seed) => doDraw(ctx, seed, monochrome);
-}
-
 function doDraw(ctx, seed, monochrome) {
 	let rng = sfc32(bits(seed), bits(seed), bits(seed), bits(seed));
 	const pallete = ['#D00000', '#FFBA08', '#3F88C5', '#032B43', '#136F63'];
@@ -43,3 +39,8 @@ function doDraw(ctx, seed, monochrome) {
 			}
 	}
 }
+
+export const schema = [
+	{ draw: (c, s) => doDraw(c, s, true), name: "Squares (Mono)", artist: "ggwpez.gh" },
+	{ draw: (c, s) => doDraw(c, s, false), name: "Squares (Chroma)", artist: "ggwpez.gh" },
+];

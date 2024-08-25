@@ -11,6 +11,7 @@ let editor = null;
 let artistInitialized = false;
 let big = false;
 const EXPORT_SIZE = 8000;
+const CUSTOM = '[Custom]';
 
 var schemas = { '[Custom]': { draw: null } };
 function addSchema(name, draw) {
@@ -30,7 +31,7 @@ function load() {
 			`  ctx.font = '0.4px serif';`,
 			`  split(seed, 2).forEach((n, i) => ctx.fillText(n, 0.5, i / 2 + 0.25, 1));`,
 			`}`,
-			`addSchema('[Custom]', draw);`
+			`addSchema('${CUSTOM}', draw);`
 		].join('\n'),
 		language: 'javascript',
 		theme: 'vs-dark',
@@ -51,10 +52,10 @@ function ensureInitialized() {
 	}
 	updateCustom();
 	try {
-		selectSchema(window.localStorage.getItem("schemaName") || '[Custom]');
+		selectSchema(window.localStorage.getItem("schemaName") || CUSTOM);
 	}
 	catch (e) {
-		selectSchema('[Custom]');
+		selectSchema(CUSTOM);
 	}
 	try {
 		index = JSON.parse(window.localStorage.getItem('index'));
@@ -103,14 +104,14 @@ function smallMode() {
 function selectSchema(name) {
 	if (schemaName == name) return;
 	if (schemaName) {
-		let e = document.getElementById(`thumb-${schemaName}`);
+		let e = document.getElementById(schemaName == CUSTOM ? 'customthumb' : `thumb-${schemaName}`);
 		if (e) e.style.backgroundColor = 'transparent';
 	}
 	schemaName = name;
-	let e = document.getElementById(`thumb-${schemaName}`);
+	let e = document.getElementById(schemaName == CUSTOM ? 'customthumb' : `thumb-${schemaName}`);
 	// Can be null if our browser local storage holds stale names.
 	if (!e) return;
-	e.style.backgroundColor = '#66f';
+	e.style.backgroundColor = '#bbf';
 	if (e.scrollIntoViewIfNeeded) e.scrollIntoViewIfNeeded();
 	window.localStorage.setItem('schemaName', name);
 	document.title = `Entropretty - ${name}`;
@@ -138,7 +139,7 @@ function exportSvg() {
 function updateCustom() {
 	let customCode = editor.getValue().trim();
 	let prefix = "function draw(ctx, seed) {\n";
-	let suffix = "\n}\naddSchema('[Custom]', draw);";
+	let suffix = `\n}\naddSchema('${CUSTOM}', draw);`;
 	if (!customCode.startsWith(prefix) || !customCode.endsWith(suffix)) {
 		if (lastCustomCode.startsWith(prefix) && lastCustomCode.endsWith(suffix)) {
 			editor.setValue(lastCustomCode);
@@ -154,13 +155,13 @@ function updateCustom() {
 		.replace('°', ' * Math.PI * 2')
 		.slice(0, -suffix.length) + "} draw";
 	console.log("Main: Updating custom...");
-	schemas['[Custom]'].draw = eval(code);
+	schemas[CUSTOM].draw = eval(code);
 	artist.postMessage({ op: 'updateCustom', code, thumb: !big });
 }
 
 function customChanged() {
 	updateCustom();
-	if (seeds) selectSchema('[Custom]');
+	if (seeds) selectSchema(CUSTOM);
 	if (customChangeTimeout) window.clearTimeout(customChangeTimeout);
 	customChangeTimeout = window.setTimeout(() => { customChangeTimeout = null; rerender(); }, 1000);
 }
@@ -254,18 +255,35 @@ function onArtistMessage(e) {
 		if (artistInitialized) return;
 		let canvas = document.createElement('canvas');
 		let thumb = e.data.thumb;
-		canvas.id = `thumb-${e.data.name}`;
+		canvas.id = `thumb-${e.data.id}`;
 		canvas.width = 100;
-		canvas.height = 100;
-		canvas.getContext('2d').drawImage(thumb, 0, 0, thumb.width, thumb.height, 0, 0, 100, 100);
-		canvas.onclick = () => { selectSchema(e.data.name) };
+		canvas.height = 130;
+		let ctx = canvas.getContext('2d');
+		ctx.drawImage(thumb, 0, 0, thumb.width, thumb.height, 4, 4, 92, 92);
+		console.log("Placing Schema", e.data);
+		if (!e.data.caption) {
+			ctx.fillStyle = "black";
+			ctx.textAlign = "left";
+			ctx.textBaseline = "bottom";
+			ctx.font = "14px Palatino bold";
+			ctx.fillText(e.data.name, 0, 116, 100);
+			if (typeof e.data.artist == 'string') {
+				ctx.textAlign = "right";
+				ctx.font = "14px Palatino italic";
+				ctx.fillText('by ' + e.data.artist, 100, 130, 100);
+			}
+		} else {
+			console.log("Have caption");
+			ctx.drawImage(e.data.caption, 0, 0, 100, 30, 0, 100, 100, 30);
+		}
+		canvas.onclick = () => { selectSchema(e.data.id) };
 		document.getElementById('schemas').appendChild(canvas);
 	} else if (e.data.op == 'initialized') {
 		artistInitialized = true;
 		ensureInitialized();
 	} else if (e.data.op == 'customThumb') {
 		let thumb = e.data.thumb;
-		let ctx = document.getElementById('thumb-[Custom]').getContext('2d');
+		let ctx = document.getElementById('customthumb').getContext('2d');
 		ctx.drawImage(thumb, 0, 0, thumb.width, thumb.height, 0, 0, 100, 100);
 	}
 }
@@ -287,12 +305,11 @@ function drawItem(ctx, seed, x, y, size) {
 
 function paintItem(ctx, seed, x, y, size) {
 	ctx.fillStyle = 'white';
-	ctx.fillRect(x, y + size * 0.12, size, size);
+	ctx.fillRect(x, y, size, size + size * 0.12);
 	drawItem(ctx, seed, x, y + size * 0.12, size)
 
 	ctx.save();
 	ctx.translate(x, y);
-	ctx.strokeStyle = 'black';
 	let d = size / 16;
 	let z = d / 2;
 	for (let i = 0; i < 32; i++) {
@@ -300,8 +317,7 @@ function paintItem(ctx, seed, x, y, size) {
 		let c = i & 15;
 		let v = bit8(seed, i);
 		ctx.fillStyle = v ? 'black' : 'white';
-		ctx.fillRect(c * d, r * d, d, d);
-		ctx.strokeRect(c * d, r * d, d, d);
+		ctx.fillRect(c * d + d / 6, r * d + d / 6, d - d / 3, d - d / 3);
 	}
 	ctx.restore();
 }

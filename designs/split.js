@@ -5,7 +5,7 @@ let rand;
 let context;
 let GR = 0.61803398875;
 
-export function draw(ctx, seed) {
+function draw(ctx, seed) {
     rand = getRNG(seed);
     context = ctx;
 
@@ -276,3 +276,5 @@ function splitBox(b, depth, colors) {
         }
     }
 }
+
+export const schema = { draw, name: "Split", artist: "pifragile.gh" };
