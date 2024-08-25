@@ -103,13 +103,17 @@ function smallMode() {
 function selectSchema(name) {
 	if (schemaName == name) return;
 	if (schemaName) {
-		document.getElementById(`thumb-${schemaName}`).style.backgroundColor = 'transparent';
+		let e = document.getElementById(`thumb-${schemaName}`);
+		if (e) e.style.backgroundColor = 'transparent';
 	}
 	schemaName = name;
 	let e = document.getElementById(`thumb-${schemaName}`);
+	// Can be null if our browser local storage holds stale names.
+	if (!e) return;
 	e.style.backgroundColor = '#66f';
 	if (e.scrollIntoViewIfNeeded) e.scrollIntoViewIfNeeded();
 	window.localStorage.setItem('schemaName', name);
+	document.title = `Entropretty - ${name}`;
 	rerender();
 }
 

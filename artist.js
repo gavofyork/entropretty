@@ -161,4 +161,17 @@ addSchema("Ringers", drawRingers);
 import { draw as drawSprite } from "./designs/sprite.js";
 addSchema("Sprite", drawSprite);
 
+import { draw as drawSquares } from "./designs/squares.js";
+addSchema("Squares (Color)", drawSquares(false));
+addSchema("Squares (Mono)", drawSquares(true));
+
+import { draw as drawPoly } from "./designs/poly.js";
+addSchema("Poly", drawPoly);
+
+import { draw as drawSplit } from "./designs/split.js";
+addSchema("Split", drawSplit);
+
+import { draw as drawKins } from "./designs/kins.js";
+addSchema("Kins", drawKins);
+
 postMessage({ op: 'initialized' });
