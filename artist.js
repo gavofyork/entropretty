@@ -13,6 +13,13 @@ import {
   turn,
   sfc32,
   deg,
+  randomGenerator,
+  secureRandomGenerator,
+  bits8,
+  bit8,
+  numeric,
+  symmetrical,
+  setDefaultContext,
 } from "./utils.js";
 
 let schemas = { "[Custom]": { draw: null } };
@@ -40,7 +47,6 @@ onmessage = function(e) {
             if (e.data.thumb) {
                 postMessage({ op: 'customThumb', thumb: thumb(d) });
             }
-            console.log("Artist: Updated custom.");
         }
         catch (e) {
             console.warn('Invalid draw code', e);
@@ -62,10 +68,11 @@ function drawItem(ctx, schema, seed, width, height) {
     ctx.textBaseline = 'middle';
     try {
         context = ctx;
+        setDefaultContext(ctx);
         ctx.aspect = height / width;
-        console.log("Artist: Drawing", seed);
         schema.draw(ctx, seed);
         context = null;
+        setDefaultContext(null);
     }
     catch (e) {
         console.warn('Render error', e);
@@ -109,6 +116,9 @@ function addSchema(name, draw) {
 }
 
 
+import { draw as drawLjky } from "./designs/ljky.js";
+addSchema("LJ.ky", drawLjky);
+
 import { draw as drawLemonJelly } from "./designs/lemonjelly.js";
 addSchema("Lemon Jelly", drawLemonJelly);
 
@@ -133,6 +143,9 @@ addSchema("Ugly Dial", drawDial);
 import { draw as drawLines } from "./designs/lines.js";
 addSchema("Ugly Lines", drawLines);
 
+import { draw as drawStar } from "./designs/star.js";
+addSchema("Star", drawStar);
+
 import { draw as drawWilsonMaze } from "./designs/maze.js";
 addSchema("Wilson's Maze", drawWilsonMaze);
 
@@ -142,8 +155,8 @@ addSchema("Planets", drawPlanets);
 import { draw as drawRoman } from "./designs/roman.js";
 addSchema("Roman Numerals", drawRoman);
 
-//import { draw as drawRingers } from "./designs/ringers.js";
-//addSchema("Ringers", drawRingers);
+import { draw as drawRingers } from "./designs/ringers.js";
+addSchema("Ringers", drawRingers);
 
 import { draw as drawSprite } from "./designs/sprite.js";
 addSchema("Sprite", drawSprite);

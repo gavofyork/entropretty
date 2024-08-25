@@ -136,8 +136,12 @@ function updateCustom() {
 	let prefix = "function draw(ctx, seed) {\n";
 	let suffix = "\n}\naddSchema('[Custom]', draw);";
 	if (!customCode.startsWith(prefix) || !customCode.endsWith(suffix)) {
-		editor.setValue(lastCustomCode);
-		return;
+		if (lastCustomCode.startsWith(prefix) && lastCustomCode.endsWith(suffix)) {
+			editor.setValue(lastCustomCode);
+			return;
+		} else {
+			customCode = prefix + customCode + suffix;
+		}
 	}
 	if (lastCustomCode == customCode) return;
 	lastCustomCode = customCode;
@@ -284,21 +288,16 @@ function paintItem(ctx, seed, x, y, size) {
 
 	ctx.save();
 	ctx.translate(x, y);
-	ctx.strokeStyle = 'none';
-	console.log("Painting", seed);
-	for(let i = 0; i < seed.length * 2; ++i) {
-		let d = size / 8;
-		let r = d / 2;
-		let a = bits8(seed, i * 4, i * 4 + 2);
-		let b = bits8(seed, i * 4 + 2, i * 4 + 4);
-		ctx.beginPath();
-		ctx.arc(r + i * d, r, r * 0.85, 0, Math.PI * 2);
-		ctx.fillStyle = shade(a);
-		ctx.fill();
-		ctx.beginPath();
-		ctx.arc(r + i * d, r, r * 0.6, 0, Math.PI * 2);
-		ctx.fillStyle = shade(b);
-		ctx.fill();
+	ctx.strokeStyle = 'black';
+	let d = size / 16;
+	let z = d / 2;
+	for (let i = 0; i < 32; i++) {
+		let r = i > 15;
+		let c = i & 15;
+		let v = bit8(seed, i);
+		ctx.fillStyle = v ? 'black' : 'white';
+		ctx.fillRect(c * d, r * d, d, d);
+		ctx.strokeRect(c * d, r * d, d, d);
 	}
 	ctx.restore();
 }
@@ -368,20 +367,20 @@ function shade(x) {
 
 function bit8(seed, i) {
 	return (seed[Math.floor(i / 8) % 4] >> i % 8) & 1;
-  }
-  
-  function bits8(seed, from = 0, to = 32) {
+}
+
+function bits8(seed, from = 0, to = 32) {
 	let r = 0;
 	for (let i = from; i < to; ++i) {
-	  r = ((r << 1) | bit8(seed, i)) >>> 0;
+		r = ((r << 1) | bit8(seed, i)) >>> 0;
 	}
 	return r;
-  }
-  
-  function numeric(seed) {
+}
+
+function numeric(seed) {
 	return (seed[0] | seed[1] << 8 | seed[2] << 16 | seed[3] << 24) >>> 0
-  }
-  
+}
+
 function bytesToNibbles(bytes) {
 	const nibbles = [];
 	for (let i = 0; i < bytes.length; i++) {

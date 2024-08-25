@@ -48,7 +48,7 @@ export function bit8(seed, i) {
 export function bits8(seed, from = 0, to = 32) {
   let r = 0;
   for (let i = from; i < to; ++i) {
-    r = ((r << 1) | bit(seed, i)) >>> 0;
+    r = ((r << 1) | bit8(seed, i)) >>> 0;
   }
   return r;
 }
@@ -57,7 +57,7 @@ export function numeric(seed) {
   return (seed[0] | seed[1] << 8 | seed[2] << 16 | seed[3] << 24) >>> 0
 }
 
-export function randomSequence(seed) {
+export function randomGenerator(seed) {
   let p = new Prando(numeric(seed));
   return function() { return p.next() }
 }
@@ -71,8 +71,7 @@ export function sfc32(a, b, c, d) {
   return f
 }
 
-export function rng(seed) {
-  console.log("Creating RNG for seed", ("" + seed));
+export function secureRandomGenerator(seed) {
   var state = sha256("" + seed);
   let f = function () {
     state = sha256(state);
@@ -119,6 +118,23 @@ export function mutateBits(count) {
             seed[item] ^= bit;
         }
     }
+}
+
+let context;
+
+export function setDefaultContext(c) {
+  context = c
+}
+
+export function symmetrical(factor, fn, ctx = context) {
+  ctx.translate(0.5, 0.5);
+  ctx.scale(0.5, 0.5);
+  for (let i = 0; i < factor; ++i) {
+    ctx.save();
+    ctx.rotate((Math.PI * 2) * i / factor);
+    fn(i);
+    ctx.restore();
+  }
 }
 
 export function sha256(ascii) {
