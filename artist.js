@@ -85,25 +85,6 @@ function drawItem(ctx, schema, seed, width, height) {
     ctx.restore();
 }
 
-Object.defineProperty(Array.prototype, 'strokeEach', {
-    value: function(f) {
-        this.forEach((e, i) => {
-            context.beginPath();
-            f(e, i);
-            context.stroke();
-        });
-    }
-});
-Object.defineProperty(Array.prototype, 'fillEach', {
-    value: function(f) {
-        this.forEach((e, i) => {
-            context.beginPath();
-            f(e, i);
-            context.fill();
-        });
-    }
-});
-
 function addSchema(schema, id) {
     console.log('Adding schema', schema, Array.isArray(schema));
     if (Array.isArray(schema)) {

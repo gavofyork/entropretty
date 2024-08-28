@@ -1,5 +1,15 @@
 import { split, bytesToNibbles } from "../utils.js";
 
+Object.defineProperty(Array.prototype, 'strokeEach', {
+  value: function(f) {
+      this.forEach((e, i) => {
+          context.beginPath();
+          f(e, i);
+          context.stroke();
+      });
+  }
+});
+
 function draw(ctx, seed) {
   seed = bytesToNibbles(seed);
   ctx.scale(0.5, 0.5);
