@@ -1,16 +1,14 @@
 import { split, bytesToNibbles } from "../utils.js";
 
-Object.defineProperty(Array.prototype, 'strokeEach', {
-  value: function(f) {
-      this.forEach((e, i) => {
-          context.beginPath();
-          f(e, i);
-          context.stroke();
-      });
-  }
-});
-
 function draw(ctx, seed) {
+  const strokeEach = (array, f)=>{
+    array.forEach((e, i) => {
+      ctx.beginPath();
+      f(e, i);
+      ctx.stroke();
+    });
+  };
+
   seed = bytesToNibbles(seed);
   ctx.scale(0.5, 0.5);
   ctx.translate(1, 1);
@@ -19,7 +17,8 @@ function draw(ctx, seed) {
   ctx.arc(0, 0, 0.98, 0, 10);
   ctx.stroke();
   ctx.lineWidth = 0.1;
-  split(seed, 32).strokeEach((b, i) => {
+
+  strokeEach(split(seed, 32),(b, i) => {
     if (b)
       ctx.arc(0, 0, 0.92, (i / 32) * Math.PI * 2, ((i + 1) / 32) * Math.PI * 2);
   });
