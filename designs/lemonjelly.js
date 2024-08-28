@@ -1,6 +1,7 @@
 import { randomGenerator } from "../utils.js";
 
 function draw(t, a) {
+  t.aspect = 1;
   let l = randomGenerator(a),
     e = {
       t: 50,

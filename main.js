@@ -28,6 +28,8 @@ function load() {
 		editor = monaco.editor.create(document.getElementById('code'), {
 		value: [
 			`function draw(ctx, seed) {`,
+			`  ctx.textAlign = 'center';`,
+  			`  ctx.textBaseline = 'middle';`,
 			`  ctx.font = '0.4px serif';`,
 			`  split(seed, 2).forEach((n, i) => ctx.fillText(n, 0.5, i / 2 + 0.25, 1));`,
 			`}`,

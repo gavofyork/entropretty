@@ -62,17 +62,9 @@ onmessage = function(e) {
 function drawItem(ctx, schema, seed, width, height) {
     ctx.save();
     ctx.scale(width, width);
-    ctx.lineWidth = 0.01;
-    ctx.lineCap = 'butt';
-    ctx.lineJoin = 'miter';
-    ctx.strokeStyle = 'black';
-    ctx.fillStyle = 'black';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
     try {
         context = ctx;
         setDefaultContext(ctx);
-        ctx.aspect = height / width;
         schema.draw(ctx, seed);
         context = null;
         setDefaultContext(null);

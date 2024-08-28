@@ -2,6 +2,7 @@ import { randomGenerator, bytesToNibbles } from "../utils.js";
 
 function draw(ctx, seed) {
   seed = bytesToNibbles(seed);
+  ctx.lineWidth = 0.01;
   let rand = randomGenerator(seed);
   let points = [];
   let disc = (x, y, r) => {
