@@ -16,7 +16,7 @@
       <canvas id="canvas" width="640" height="640""/>
     </div>
     <script type="module">
-      import { draw } from "./out/bloom.js";
+      import { schema }  from "./out/bloom.js";
       function randSeed(bytes = 4) {
         let s = [];
         for (var i = 0; i < bytes; ++i) {
@@ -47,7 +47,7 @@
 
       const seedBytes = randSeed(4)
 
-      draw(ctx, seedBytes);
+      schema.draw(ctx, seedBytes);
       ctx.restore();
     </script>
   </body>
