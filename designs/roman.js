@@ -44,19 +44,11 @@ function draw(ctx, seed) {
   seed = bytesToNibbles(seed);
   let size = 1;
   let numbers = split(seed, 3);
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
   ctx.strokeStyle = "";
   ctx.fillStyle = "black";
   ctx.textAlign = "center";
   ctx.textBaseline = "bottom";
   ctx.font = size / 3 + "px serif";
-
-  const textMetrics =  ctx.measureText(roman(numbers[0]));
-  const totalHeight = textMetrics.actualBoundingBoxAscent + textMetrics.actualBoundingBoxDescent;
-  const translate = size - totalHeight * 3;
-  ctx.translate(0, translate / 2);
-
   for (let i = 0; i < 3; ++i) {
     ctx.fillText(roman(numbers[i]), size / 2, (size / 3) * (i + 1), size);
   }
