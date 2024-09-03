@@ -4,7 +4,7 @@ A simple Javascript-based entropy-to-graphic harness.
 
 Try it at https://gavofyork.github.io/entropretty/.
 
-<img width="735" alt="image" src="https://github.com/gavofyork/entropretty/assets/138296/0832a8a7-7e6e-4e9b-9de6-6b48d0e80998">
+<img width="735" alt="image" src="https://github.com/user-attachments/assets/9faef5a2-12ad-4599-b75d-a923e6594f09">
 
 ## Usage
 
