@@ -1,8 +1,7 @@
-import { split, bytesToNibbles } from "../utils.js";
+import { split } from "../utils.js";
 
 function draw(ctx, seed) {
-  seed = bytesToNibbles(seed);
-  ctx.scale(0.5, 0.5);
+  ctx.scale(50, 50);
   ctx.translate(1, 1);
   ctx.lineWidth = 0.04;
   ctx.beginPath();

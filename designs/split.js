@@ -1,4 +1,4 @@
-import { black, bytesToNibbles } from "../utils.js";
+import { black } from "../utils.js";
 
 let cs, cs2;
 let rand;
@@ -7,6 +7,7 @@ let GR = 0.61803398875;
 
 function draw(ctx, seed) {
     rand = getRNG(seed);
+    ctx.scale(100, 100);
     context = ctx;
 
     cs = 1

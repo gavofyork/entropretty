@@ -1,22 +1,19 @@
 // Import all utils, to make them available to the code editor
 import {
-  bits,
-  bit,
   pi,
   shade,
   black,
   white,
   light,
   dark,
-  split,
   gray,
   turn,
-  sfc32,
   deg,
   randomGenerator,
   secureRandomGenerator,
-  bits8,
-  bit8,
+  bits,
+  bit,
+  split,
   numeric,
   symmetrical,
   setDefaultContext,
@@ -61,14 +58,14 @@ onmessage = function(e) {
 
 function drawItem(ctx, schema, seed, width, height) {
     ctx.save();
-    ctx.scale(width, width);
-    ctx.lineWidth = 0.01;
+    ctx.scale(width / 100, width / 100);
+    ctx.lineWidth = 1;
     ctx.lineCap = 'butt';
     ctx.lineJoin = 'miter';
     ctx.strokeStyle = 'black';
     ctx.fillStyle = 'black';
     ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
+    ctx.textBaseline = 'bottom';
     try {
         context = ctx;
         setDefaultContext(ctx);
@@ -85,9 +82,9 @@ function drawItem(ctx, schema, seed, width, height) {
         ctx.strokeStyle = 'black';
         ctx.beginPath();
         ctx.moveTo(0, 0);
-        ctx.lineTo(1, height / width);
-        ctx.moveTo(0, height / width);
-        ctx.lineTo(1, 0);
+        ctx.lineTo(100, 100 * height / width);
+        ctx.moveTo(0, 100 * height / width);
+        ctx.lineTo(100, 0);
         ctx.stroke();
     }
     ctx.restore();

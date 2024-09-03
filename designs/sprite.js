@@ -1,4 +1,4 @@
-import { split, bytesToNibbles } from "../utils.js";
+import { bits } from "../utils.js";
 
 // I didn't come up with this magic myself - it's shamelessly lifted from the internet (it's all
 // over the place, but I reverse-engineered it from dwitter).
@@ -21,9 +21,8 @@ function drawComponent(ctx, px, py, shadow, scale) {
   }
 }
 function draw(ctx, seed) {
-  seed = bytesToNibbles(seed);
-  let size = 1;
-  let item = split(seed, 1)[0]; // 5000060;
+  let size = 100;
+  let item = bits(seed); // 5000060;
   //    console.log(item);
   //    item = 38000060;
   let h = 16;

@@ -284,6 +284,7 @@ function onArtistMessage(e) {
 	} else if (e.data.op == 'customThumb') {
 		let thumb = e.data.thumb;
 		let ctx = document.getElementById('customthumb').getContext('2d');
+		ctx.clearRect(0, 0, 100, 100);
 		ctx.drawImage(thumb, 0, 0, thumb.width, thumb.height, 0, 0, 100, 100);
 	}
 }
@@ -315,7 +316,7 @@ function paintItem(ctx, seed, x, y, size) {
 	for (let i = 0; i < 32; i++) {
 		let r = i > 15;
 		let c = i & 15;
-		let v = bit8(seed, i);
+		let v = bit(seed, i);
 		ctx.fillStyle = v ? 'black' : 'white';
 		ctx.fillRect(c * d + d / 6, r * d + d / 6, d - d / 3, d - d / 3);
 	}
@@ -385,30 +386,20 @@ function shade(x) {
   return black;
 }
 
-function bit8(seed, i) {
+function bit(seed, i) {
 	return (seed[Math.floor(i / 8) % 4] >> i % 8) & 1;
 }
 
-function bits8(seed, from = 0, to = 32) {
+function bits(seed, from = 0, to = 32) {
 	let r = 0;
 	for (let i = from; i < to; ++i) {
-		r = ((r << 1) | bit8(seed, i)) >>> 0;
+		r = ((r << 1) | bit(seed, i)) >>> 0;
 	}
 	return r;
 }
 
 function numeric(seed) {
 	return (seed[0] | seed[1] << 8 | seed[2] << 16 | seed[3] << 24) >>> 0
-}
-
-function bytesToNibbles(bytes) {
-	const nibbles = [];
-	for (let i = 0; i < bytes.length; i++) {
-	  // Split each 8-bit number into two 4-bit numbers
-	  nibbles.push((bytes[i] >> 4) & 0xf); // Upper 4 bits
-	  nibbles.push(bytes[i] & 0xf); // Lower 4 bits
-	}
-	return nibbles;
 }
 
 function mutateBits(count) {

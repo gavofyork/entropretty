@@ -1,4 +1,4 @@
-import { black, bytesToNibbles } from "../utils.js";
+import { black, split } from "../utils.js";
 
 function drawPetals(ctx, count, bias, sway, width, shade) {
   ctx.save();
@@ -19,18 +19,18 @@ function drawPetals(ctx, count, bias, sway, width, shade) {
 }
 
 function draw(ctx, seed) {
-  seed = bytesToNibbles(seed);
-  ctx.translate(0.5, 0.5);
-  ctx.scale(0.5, 0.5);
+  let n = split(seed, 16);
+  ctx.translate(50, 50);
+  ctx.scale(50, 50);
 
   for (let s = 0; s < 4; s++) {
     ctx.scale(0.7, -0.7);
     drawPetals(
       ctx,
-      Math.floor(seed[s] / 4) + 6,
-      (Math.floor(seed[s + 4] % 4) + 1) / 5,
-      ((seed[s] % 4) - 1) / 8,
-      (Math.floor(seed[s + 4] / 4) + 1) / 9,
+      n[s * 4] + 6,
+      (n[s * 4 + 1] + 1) / 5,
+      (n[s * 4 + 2] - 1) / 8,
+      (n[s * 4 + 3] + 1) / 9,
       //seed[s] % 2 == 1 ? dark : light
       `rgba(${s * 64}, ${s * 64}, ${s * 64}, 1.0)`
     );

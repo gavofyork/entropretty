@@ -30,7 +30,7 @@ export function shade(x) {
 }
 
 export function bit(seed, i) {
-  return (seed[Math.floor(i / 4) % 8] >> i % 4) & 1;
+  return (seed[Math.floor(i / 8) % 4] >> i % 8) & 1;
 }
 
 export function bits(seed, from = 0, to = 32) {
@@ -41,14 +41,13 @@ export function bits(seed, from = 0, to = 32) {
   return r;
 }
 
-export function bit8(seed, i) {
-  return (seed[Math.floor(i / 8) % 4] >> i % 8) & 1;
-}
-
-export function bits8(seed, from = 0, to = 32) {
-  let r = 0;
-  for (let i = from; i < to; ++i) {
-    r = ((r << 1) | bit8(seed, i)) >>> 0;
+export function split(seed, parts) {
+  let r = [];
+  let last = 0;
+  for (let i = 0; i < parts; ++i) {
+    let next = Math.round(((i + 1) * 32) / parts);
+    r.push(bits(seed, last, next));
+    last = next;
   }
   return r;
 }
@@ -62,12 +61,12 @@ export function randomGenerator(seed) {
   return function() { return p.next() }
 }
 
-export function sfc32(a, b, c, d) {
+export function cheapRandomGenerator(seed) {
+  let a = bits(seed);
+  let b = bits(seed);
+  let c = bits(seed);
+  let d = bits(seed);
   return function () {
-      a >>>= 0;
-      b >>>= 0;
-      c >>>= 0;
-      d >>>= 0;
       var t = (a + b) | 0;
       a = b ^ (b >>> 9);
       b = (c + (c << 3)) | 0;
@@ -88,17 +87,6 @@ export function secureRandomGenerator(seed) {
   return f
 }
 
-export function split(seed, parts) {
-  let r = [];
-  let last = 0;
-  for (let i = 0; i < parts; ++i) {
-    let next = Math.round(((i + 1) * 32) / parts);
-    r.push(bits(seed, last, next));
-    last = next;
-  }
-  return r;
-}
-
 export function randSeed(bytes = 4) {
     let s = [];
     for (var i = 0; i < bytes; ++i) {
@@ -106,16 +94,6 @@ export function randSeed(bytes = 4) {
         s.push(n);
     }
     return s
-}
-
-export function bytesToNibbles(bytes) {
-  const nibbles = [];
-  for (let i = 0; i < bytes.length; i++) {
-    // Split each 8-bit number into two 4-bit numbers
-    nibbles.push((bytes[i] >> 4) & 0xf); // Upper 4 bits
-    nibbles.push(bytes[i] & 0xf); // Lower 4 bits
-  }
-  return nibbles;
 }
 
 export function mutateBits(count) {
@@ -135,8 +113,8 @@ export function setDefaultContext(c) {
 }
 
 export function symmetrical(factor, fn, ctx = context) {
-  ctx.translate(0.5, 0.5);
-  ctx.scale(0.5, 0.5);
+  ctx.translate(50, 50);
+  ctx.scale(50, 50);
   for (let i = 0; i < factor; ++i) {
     ctx.save();
     ctx.rotate((Math.PI * 2) * i / factor);

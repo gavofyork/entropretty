@@ -1,4 +1,4 @@
-import { bit, bits, bytesToNibbles } from "../utils.js";
+import { bit, bits } from "../utils.js";
 // Index 0 is treated as MSB:
 // [0]: Sun / Black Hole
 // [1, 5]: Orbit Dash Outer - 0: No Dash, 1: Dash
@@ -6,7 +6,7 @@ import { bit, bits, bytesToNibbles } from "../utils.js";
 // [21, 25]: Planet Clr Outer - 0: White, 1: Black
 // [26, 30]: Planet Size Outer - n: n * x + y
 function draw(ctx, seed) {
-  seed = bytesToNibbles(seed);
+  ctx.scale(100, 100);
   const range = (len) =>
     Array(len)
       .fill(0)

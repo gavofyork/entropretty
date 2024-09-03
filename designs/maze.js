@@ -1,4 +1,4 @@
-import { bits, light, bytesToNibbles } from "../utils.js";
+import { bits, light } from "../utils.js";
 
 let patterns = [
   [
@@ -177,8 +177,7 @@ function deadend(cell, cells, last) {
 }
 
 function draw(ctx, seed) {
-  seed = bytesToNibbles(seed);
-  let size = 1;
+  let size = 100;
   let cols = 16;
   let rows = cols;
   let inc = size / cols;
@@ -188,7 +187,7 @@ function draw(ctx, seed) {
     for (let j = 0; j < rows; j++) cells[i][j] = new Cell(i, j, seed);
   }
   let walk = [];
-  cells[seed[0]][seed[1]].inMaze = true;
+  cells[bits(seed, 0, 4)][bits(seed, 4, 8)].inMaze = true;
   ctx.fillStyle = "rgb(255, 255, 255)";
   ctx.lineWidth = inc / 4;
   ctx.lineCap = "square";

@@ -49,6 +49,7 @@ gp = 2.34
 let NUM_ITERS = 100;
 
 function draw(ctx, seed) {
+    ctx.scale(100, 100);
     rand = getRNG(seed);
     context = ctx;
 

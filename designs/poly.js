@@ -6,6 +6,7 @@ let context;
 
 function draw(ctx, seed) {
     rand = getRNG(seed);
+    ctx.scale(100, 100);
     context = ctx;
 
     cs = 1

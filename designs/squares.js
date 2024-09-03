@@ -1,10 +1,11 @@
 // Inspired by "Quadrate - Herbert Franke".
 
-import { sfc32, bits } from "../utils.js";
+import { cheapRandomGenerator } from "../utils.js";
 
 function doDraw(ctx, seed, monochrome) {
-	let rng = sfc32(bits(seed), bits(seed), bits(seed), bits(seed));
+	let rng = cheapRandomGenerator(seed);
 	const pallete = ['#D00000', '#FFBA08', '#3F88C5', '#032B43', '#136F63'];
+	ctx.scale(100, 100);
 	ctx.lineWidth = 1 / 200;
 
 	for (const n of [6, 3, 2]) {
