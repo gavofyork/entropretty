@@ -8,7 +8,11 @@ Try it at https://gavofyork.github.io/entropretty/.
 
 ## Usage
 
-Just view the `index.html` file in a browser locally.
+```sh
+npm install
+npm run bundle
+npm start
+```
 
 ## Playing around
 
